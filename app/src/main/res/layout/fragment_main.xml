@@ -1,0 +1,23 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="@color/divide">
+
+    <com.insightsurface.lib.widget.bar.TopBar
+        android:id="@+id/gradient_bar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/white"
+        app:left_text=""
+        app:right_text=""
+        app:title_textColor="@color/main_text_color"
+        app:title_text="本地视频"></com.insightsurface.lib.widget.bar.TopBar>
+
+    <include
+        layout="@layout/activity_only_refresh_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="5dp"
+        android:layout_below="@+id/gradient_bar"></include>
+</RelativeLayout>
