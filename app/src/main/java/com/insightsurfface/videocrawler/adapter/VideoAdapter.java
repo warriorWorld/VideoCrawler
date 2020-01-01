@@ -37,12 +37,12 @@ public class VideoAdapter extends BaseRecyclerAdapter {
 
     @Override
     protected String getEmptyText() {
-        return "暂无笔记";
+        return "暂无视频";
     }
 
     @Override
     protected String getEmptyBtnText() {
-        return "+  添加笔记";
+        return "+  添加视频";
     }
 
     @Override

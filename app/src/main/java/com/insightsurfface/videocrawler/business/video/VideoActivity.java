@@ -1,5 +1,7 @@
 package com.insightsurfface.videocrawler.business.video;
 
+import android.content.Context;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,12 +26,21 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private String testURL = "http://ugcws.video.gtimg.com/uwMROfz2r5zAoaQXGdGnC2dfJ6nM3DInWQqp2axRinGnB-kO/r3043xtjgug.p701.1.mp4?sdtfrom=v1104&guid=4c68826f6ff46a643a05b409826286dd&vkey=E16F961FF0E960562170443D6717CE8CA5CF7216E939E0E7B3B330999D3596F7ED1AAFD38A785573A0D768BAD5814B0FC39C816DDC8A3010586FDAD399A7537BF9969F79C2051082E8A275C66CBB92E419CA5D99C5504123D86E2FA67FF34F618A8448C1888D8A048F4AB211E112A407E23051D7BE2367CB6059549099F86C23";
     private Button chooseUriBtn;
     private MediaPlayer mPlayer;
+    private String url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent intent = getIntent();
+        url = intent.getStringExtra("url");
         initSurfaceView();
         initPlayer();
+    }
+
+    public static void startActivity(Context context, String fileUrl) {
+        Intent intent = new Intent(context, VideoActivity.class);
+        intent.putExtra("url", fileUrl);
+        context.startActivity(intent);
     }
 
     private void initSurfaceView() {
@@ -48,7 +59,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         mPlayer.setOnVideoSizeChangedListener(this);
         try {
             //使用手机本地视频
-            mPlayer.setDataSource(this, Uri.parse(testURL));
+            mPlayer.setDataSource(this, Uri.parse(url));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -64,7 +75,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_main;
+        return R.layout.activity_video;
     }
 
     @Override
@@ -115,7 +126,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.choose_uri_btn:
                 mPlayer.start();
                 break;

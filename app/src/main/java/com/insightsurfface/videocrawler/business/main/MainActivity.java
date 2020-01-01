@@ -1,6 +1,8 @@
 package com.insightsurfface.videocrawler.business.main;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -17,6 +19,9 @@ import com.insightsurface.lib.utils.ActivityPoor;
 import com.insightsurface.lib.widget.dialog.NormalDialog;
 import com.insightsurfface.videocrawler.R;
 import com.insightsurfface.videocrawler.base.BaseActivity;
+import com.insightsurfface.videocrawler.utils.FileUtils;
+
+import java.net.URISyntaxException;
 
 import androidx.fragment.app.FragmentTransaction;
 
@@ -74,6 +79,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     public void onEventMainThread(EventBusEvent event) {
         super.onEventMainThread(event);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {//是否选择，没选择就不会继续
+            // Get the Uri of the selected file
+            Uri uri = data.getData();
+            // Get the path
+            String path = null;
+            try {
+                path = FileUtils.getPath(this, uri);
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+            baseToast.showToast(path);
+            mMainFragment.addVideo(path, 0);
+        }
     }
 
     @Override
