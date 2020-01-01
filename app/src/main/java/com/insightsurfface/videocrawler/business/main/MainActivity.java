@@ -1,5 +1,6 @@
 package com.insightsurfface.videocrawler.business.main;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -12,7 +13,9 @@ import android.widget.TextView;
 
 import com.insightsurface.lib.base.BaseFragment;
 import com.insightsurface.lib.bean.LoginBean;
+import com.insightsurface.lib.business.lunch.LunchActivity;
 import com.insightsurface.lib.business.user.LoginActivity;
+import com.insightsurface.lib.config.Configure;
 import com.insightsurface.lib.eventbus.EventBusEvent;
 import com.insightsurface.lib.listener.OnDialogClickListener;
 import com.insightsurface.lib.utils.ActivityPoor;
@@ -22,10 +25,14 @@ import com.insightsurfface.videocrawler.base.BaseActivity;
 import com.insightsurfface.videocrawler.utils.FileUtils;
 
 import java.net.URISyntaxException;
+import java.util.List;
 
 import androidx.fragment.app.FragmentTransaction;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
 
-public class MainActivity extends BaseActivity implements View.OnClickListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener,
+        EasyPermissions.PermissionCallbacks {
     private MainFragment mMainFragment;
     private UserFragment mUserFragment;
     /**
@@ -43,6 +50,21 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mMainFragment = new MainFragment();
         mUserFragment = new UserFragment();
         switchContent(null, mMainFragment);
+        getPermissions();
+    }
+
+    @AfterPermissionGranted(Configure.PERMISSION_FILE_REQUST_CODE)
+    private void getPermissions() {
+        String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+        if (EasyPermissions.hasPermissions(this, perms)) {
+            // Already have permission, do the thing
+            // ...
+            //nothing to do
+        } else {
+            // Do not have permissions, request them now
+            EasyPermissions.requestPermissions(this, "我们需要写入/读取权限",
+                    Configure.PERMISSION_FILE_REQUST_CODE, perms);
+        }
     }
 
     @Override
@@ -169,6 +191,38 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             case R.id.user_bottom_ll:
                 switchContent(curFragment, mUserFragment);
                 break;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> perms) {
+        baseToast.showToast("已获得授权,请继续!");
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> perms) {
+        if (Configure.PERMISSION_FILE_REQUST_CODE == requestCode) {
+            NormalDialog peanutDialog = new NormalDialog(MainActivity.this);
+            peanutDialog.setOnDialogClickListener(new OnDialogClickListener() {
+                @Override
+                public void onOkClick() {
+                    ActivityPoor.finishAllActivity();
+                }
+
+                @Override
+                public void onCancelClick() {
+
+                }
+            });
+            peanutDialog.show();
+            peanutDialog.setTitle("没有文件读写权限,就没法看视频啊！");
         }
     }
 }

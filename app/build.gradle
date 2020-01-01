@@ -27,4 +27,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
     implementation 'com.github.warriorWorld:SuhangLib:1.0.9'
     implementation 'org.greenrobot:eventbus:3.0.0'
+    implementation 'pub.devrel:easypermissions:1.0.0'
 }
