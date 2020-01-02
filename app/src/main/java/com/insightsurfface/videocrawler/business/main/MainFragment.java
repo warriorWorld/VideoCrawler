@@ -12,7 +12,7 @@ import com.insightsurface.lib.widget.bar.TopBar;
 import com.insightsurface.lib.widget.dialog.NormalDialog;
 import com.insightsurfface.videocrawler.R;
 import com.insightsurfface.videocrawler.adapter.VideoAdapter;
-import com.insightsurfface.videocrawler.business.bean.VideoBean;
+import com.insightsurfface.videocrawler.bean.VideoBean;
 import com.insightsurfface.videocrawler.business.video.VideoActivity;
 import com.insightsurfface.videocrawler.db.DbAdapter;
 import com.insightsurfface.videocrawler.utils.StringUtil;

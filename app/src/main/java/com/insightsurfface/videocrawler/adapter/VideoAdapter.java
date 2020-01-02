@@ -1,7 +1,6 @@
 package com.insightsurfface.videocrawler.adapter;
 
 import android.content.Context;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,9 +11,8 @@ import android.widget.TextView;
 import com.insightsurface.lib.base.BaseRecyclerAdapter;
 import com.insightsurface.lib.listener.OnRecycleItemClickListener;
 import com.insightsurface.lib.listener.OnRecycleItemLongClickListener;
-import com.insightsurface.lib.utils.ThreeDESUtil;
 import com.insightsurfface.videocrawler.R;
-import com.insightsurfface.videocrawler.business.bean.VideoBean;
+import com.insightsurfface.videocrawler.bean.VideoBean;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

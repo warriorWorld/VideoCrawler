@@ -49,8 +49,8 @@
 
                 <ImageView
                     android:id="@+id/homepage_bottom_iv"
-                    android:layout_width="@dimen/main_tab_icon"
-                    android:layout_height="@dimen/main_tab_icon"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:src="@drawable/ic_home"/>
 
                 <TextView
@@ -77,8 +77,8 @@
 
                 <ImageView
                     android:id="@+id/user_bottom_iv"
-                    android:layout_width="@dimen/main_tab_icon"
-                    android:layout_height="@dimen/main_tab_icon"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:src="@drawable/ic_user1"/>
 
                 <TextView

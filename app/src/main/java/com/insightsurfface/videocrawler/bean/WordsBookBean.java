@@ -1,4 +1,4 @@
-package com.insightsurfface.videocrawler.business.bean;
+package com.insightsurfface.videocrawler.bean;
 
 /**
  * Created by Administrator on 2016-07-29.

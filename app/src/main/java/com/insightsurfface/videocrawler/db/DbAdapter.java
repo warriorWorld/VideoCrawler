@@ -4,8 +4,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.insightsurfface.videocrawler.business.bean.VideoBean;
-import com.insightsurfface.videocrawler.business.bean.WordsBookBean;
+import com.insightsurfface.videocrawler.bean.VideoBean;
+import com.insightsurfface.videocrawler.bean.WordsBookBean;
 import com.insightsurfface.videocrawler.config.Configure;
 
 import java.util.ArrayList;

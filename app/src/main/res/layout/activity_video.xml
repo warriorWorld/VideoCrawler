@@ -94,6 +94,15 @@
         android:text="选择视频文件"
         android:visibility="gone"></Button>
 
+    <ImageView
+        android:id="@+id/translate_iv"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="20dp"
+        android:src="@drawable/ic_translation"></ImageView>
+
     <com.insightsurfface.videocrawler.widget.dragview.ShelterView
         android:id="@+id/shelter_dv"
         android:layout_width="match_parent"
@@ -101,5 +110,6 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="30dp"
         android:elevation="3dp"
-        android:src="@color/white"></com.insightsurfface.videocrawler.widget.dragview.ShelterView>
+        android:src="@color/white"
+        android:visibility="gone"></com.insightsurfface.videocrawler.widget.dragview.ShelterView>
 </RelativeLayout>

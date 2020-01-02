@@ -3,6 +3,7 @@ package com.insightsurfface.videocrawler.business.video;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.media.SubtitleData;
 import android.net.Uri;
@@ -10,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.ClipboardManager;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -19,16 +21,29 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.VolleyError;
 import com.insightsurface.lib.utils.Logger;
 import com.insightsurface.lib.utils.SharedPreferencesUtils;
-import com.insightsurface.lib.widget.dragview.DragView;
 import com.insightsurfface.videocrawler.R;
 import com.insightsurfface.videocrawler.base.BaseActivity;
+import com.insightsurfface.videocrawler.bean.YoudaoResponse;
+import com.insightsurfface.videocrawler.config.Configure;
+import com.insightsurfface.videocrawler.config.ShareKeys;
+import com.insightsurfface.videocrawler.listener.OnEditResultListener;
 import com.insightsurfface.videocrawler.utils.DisplayUtil;
+import com.insightsurfface.videocrawler.utils.ScreenShot;
 import com.insightsurfface.videocrawler.utils.StringUtil;
+import com.insightsurfface.videocrawler.volley.VolleyCallBack;
+import com.insightsurfface.videocrawler.volley.VolleyTool;
+import com.insightsurfface.videocrawler.widget.dialog.MangaImgEditDialog;
+import com.insightsurfface.videocrawler.widget.dialog.OnlyEditDialog;
+import com.insightsurfface.videocrawler.widget.dialog.TranslateDialog;
 import com.insightsurfface.videocrawler.widget.dragview.ShelterView;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
+
+import java.util.HashMap;
 
 import androidx.annotation.NonNull;
 
@@ -78,10 +93,15 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private boolean userControling = false;
     private int id;
     private ShelterView shelterDv;
+    private ClipboardManager clip;//复制文本用
+    private TranslateDialog translateResultDialog;
+    private OnlyEditDialog searchDialog;
+    private ImageView translateIv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        clip = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         Intent intent = getIntent();
         id = intent.getIntExtra("id", 0);
         url = intent.getStringExtra("url");
@@ -171,7 +191,6 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
 
             @Override
             public void dragEnd() {
-                playStart();
             }
         });
         titleTv = (TextView) findViewById(R.id.video_title_tv);
@@ -214,11 +233,14 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, height);
         divideV.setLayoutParams(params);
         playIv = findViewById(R.id.play_iv);
+        translateIv = findViewById(R.id.translate_iv);
 
+        translateIv.setOnClickListener(this);
         playIv.setOnClickListener(this);
         videoSv.setOnClickListener(this);
         fullScreenIv.setOnClickListener(this);
         chooseUriBtn.setOnClickListener(this);
+        shelterDv.setOnClickListener(this);
     }
 
     @Override
@@ -401,7 +423,6 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
 //                baseTopBar.setVisibility(View.GONE);
                 titleTv.setVisibility(View.VISIBLE);
                 chooseUriBtn.setVisibility(View.GONE);
-                shelterDv.setVisibility(View.VISIBLE);
                 shelterDv.toLastPosition();
                 resizeSurfaceView(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                 fullScreenIv.setImageResource(R.drawable.ic_full_screen_exit1);
@@ -446,6 +467,112 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         }
     }
 
+    private void translateWord(final String word) {
+//        clip.setText(word);
+        //记录查过的单词
+        if (SharedPreferencesUtils.getBooleanSharedPreferencesData(this, ShareKeys.CLOSE_TRANSLATE, false)) {
+            //关闭自动翻译
+            return;
+        }
+        String url = Configure.YOUDAO + word;
+        HashMap<String, String> params = new HashMap<String, String>();
+        VolleyCallBack<YoudaoResponse> callback = new VolleyCallBack<YoudaoResponse>() {
+
+            @Override
+            public void loadSucceed(YoudaoResponse result) {
+                if (null != result && result.getErrorCode() == 0) {
+                    YoudaoResponse.BasicBean item = result.getBasic();
+                    String t = "";
+                    if (null != item) {
+                        for (int i = 0; i < item.getExplains().size(); i++) {
+                            t = t + item.getExplains().get(i) + ";";
+                        }
+
+                        showTranslateResultDialog(word, result.getQuery() + "  [" + item.getPhonetic() + "]: " + "\n" + t);
+                    } else {
+                        baseToast.showToast("没查到该词");
+                    }
+                } else {
+                    baseToast.showToast("没查到该词");
+                }
+            }
+
+            @Override
+            public void loadFailed(VolleyError error) {
+                baseToast.showToast("error\n" + error);
+            }
+
+            @Override
+            public void loadSucceedButNotNormal(YoudaoResponse result) {
+
+            }
+        };
+        VolleyTool.getInstance(this).requestData(Request.Method.GET,
+                this, url, params,
+                YoudaoResponse.class, callback);
+    }
+
+    private void showTranslateResultDialog(final String title, String msg) {
+        if (null == translateResultDialog) {
+            translateResultDialog = new TranslateDialog(this);
+            translateResultDialog.setOnPeanutDialogClickListener(new TranslateDialog.OnPeanutDialogClickListener() {
+                @Override
+                public void onOkClick() {
+                    playStart();
+                }
+
+                @Override
+                public void onCancelClick() {
+                    playStart();
+                }
+            });
+        }
+        translateResultDialog.show();
+
+        translateResultDialog.setTitle(title);
+        translateResultDialog.setMessage(msg);
+        translateResultDialog.setOkText("确定");
+        translateResultDialog.setCancelable(true);
+    }
+
+    private void showSearchDialog() {
+        playPause();
+        if (null == searchDialog) {
+            searchDialog = new OnlyEditDialog(this);
+            searchDialog.setOnEditResultListener(new OnEditResultListener() {
+                @Override
+                public void onResult(String text) {
+                    translateWord(text);
+                }
+
+                @Override
+                public void onCancelClick() {
+
+                }
+            });
+            searchDialog.setCancelable(true);
+        }
+        searchDialog.show();
+        searchDialog.clearEdit();
+    }
+
+    private void showImgLandscapeKeyBoardDialog(Bitmap bp) {
+        MangaImgEditDialog dialog = new MangaImgEditDialog(this);
+        dialog.setOnEditResultListener(new OnEditResultListener() {
+            @Override
+            public void onResult(String text) {
+                translateWord(text);
+            }
+
+            @Override
+            public void onCancelClick() {
+
+            }
+        });
+        dialog.show();
+        dialog.setImgRes(bp);
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -457,6 +584,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                 }
                 break;
             case R.id.play_iv:
+            case R.id.shelter_dv:
                 if (mPlayer.isPlaying()) {
                     playPause();
                     showControl();
@@ -471,6 +599,12 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                 } else {
                     showControl();
                 }
+                break;
+            case R.id.translate_iv:
+//                int top=shelterDv.getBottom();
+//                Bitmap bgBitmap = ScreenShot.takeScreenShot(this, 0,screenHeight,top, screenWidth-top);
+//                showImgLandscapeKeyBoardDialog(bgBitmap);
+                showSearchDialog();
                 break;
         }
     }

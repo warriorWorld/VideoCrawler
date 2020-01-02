@@ -1,4 +1,4 @@
-package com.insightsurfface.videocrawler.business.bean;
+package com.insightsurfface.videocrawler.bean;
 
 import com.insightsurface.lib.bean.BaseBean;
 
