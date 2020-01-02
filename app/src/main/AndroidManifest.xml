@@ -14,8 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".business.main.MainActivity"
-            android:launchMode="singleTask">
+            android:name=".business.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,7 +24,6 @@
         <activity
             android:name=".business.video.VideoActivity"
             android:configChanges="orientation|screenSize"
-            android:launchMode="singleTask"
             android:screenOrientation="portrait"></activity>
     </application>
 

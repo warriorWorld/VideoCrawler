@@ -28,11 +28,11 @@
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_below="@+id/divide_v"
-            android:singleLine="true"
             android:background="@color/control_bg"
             android:gravity="center_vertical"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
+            android:singleLine="true"
             android:text="title"
             android:textColor="@color/white"
             android:textSize="15sp"></TextView>
@@ -93,4 +93,13 @@
         android:layout_alignParentBottom="true"
         android:text="选择视频文件"
         android:visibility="gone"></Button>
+
+    <com.insightsurfface.videocrawler.widget.dragview.ShelterView
+        android:id="@+id/shelter_dv"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="30dp"
+        android:elevation="3dp"
+        android:src="@color/white"></com.insightsurfface.videocrawler.widget.dragview.ShelterView>
 </RelativeLayout>

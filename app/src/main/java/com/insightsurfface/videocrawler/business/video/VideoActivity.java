@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
+import android.media.SubtitleData;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,12 +21,16 @@ import android.widget.TextView;
 
 import com.insightsurface.lib.utils.Logger;
 import com.insightsurface.lib.utils.SharedPreferencesUtils;
+import com.insightsurface.lib.widget.dragview.DragView;
 import com.insightsurfface.videocrawler.R;
 import com.insightsurfface.videocrawler.base.BaseActivity;
 import com.insightsurfface.videocrawler.utils.DisplayUtil;
 import com.insightsurfface.videocrawler.utils.StringUtil;
+import com.insightsurfface.videocrawler.widget.dragview.ShelterView;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
+
+import androidx.annotation.NonNull;
 
 public class VideoActivity extends BaseActivity implements SurfaceHolder.Callback,
         MediaPlayer.OnCompletionListener,
@@ -72,6 +77,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private int finalPosition = 0;
     private boolean userControling = false;
     private int id;
+    private ShelterView shelterDv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,6 +121,14 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         mPlayer.setOnPreparedListener(this);
         mPlayer.setOnSeekCompleteListener(this);
         mPlayer.setOnVideoSizeChangedListener(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            mPlayer.setOnSubtitleDataListener(new MediaPlayer.OnSubtitleDataListener() {
+                @Override
+                public void onSubtitleData(@NonNull MediaPlayer mp, @NonNull SubtitleData data) {
+                    Logger.d(data.toString());
+                }
+            });
+        }
         try {
             //使用手机本地视频
             mPlayer.setDataSource(this, Uri.parse(url));
@@ -127,9 +141,16 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
      * 更新播放时间
      */
     private void updateTime() {
-        int currentSecond = (int) ((mPlayer.getCurrentPosition() / 1000f));
-        timeTv.setText(StringUtil.second2Hour(currentSecond) + "/" + StringUtil.second2Hour(duration));
-        progressSb.setProgress(currentSecond);
+        if (null==mPlayer){
+            return;
+        }
+        try {
+            int currentSecond = (int) ((mPlayer.getCurrentPosition() / 1000f));
+            timeTv.setText(StringUtil.second2Hour(currentSecond) + "/" + StringUtil.second2Hour(duration));
+            progressSb.setProgress(currentSecond);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -138,6 +159,9 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         videoSv = findViewById(R.id.video_sv);
         chooseUriBtn = findViewById(R.id.choose_uri_btn);
         controlRl = (RelativeLayout) findViewById(R.id.control_rl);
+        shelterDv = findViewById(R.id.shelter_dv);
+        shelterDv.setSavePosition(true);
+        shelterDv.setLastPosKey("POS_KEY"+id);
         titleTv = (TextView) findViewById(R.id.video_title_tv);
         progressSb = (DiscreteSeekBar) findViewById(R.id.progress_sb);
         progressSb.setMin(0);
@@ -325,6 +349,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private void resizeSurfaceView(int orientation) {
         ViewGroup.LayoutParams lp = videoSv.getLayoutParams();
         ViewGroup.LayoutParams controlLp = controlRl.getLayoutParams();
+        ViewGroup.LayoutParams shelterLp = shelterDv.getLayoutParams();
         int finalWidth = 0, finalHeight = 0;
         switch (orientation) {
             case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
@@ -342,8 +367,11 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         lp.height = finalHeight;
         controlLp.width = finalWidth;
         controlLp.height = finalHeight;
+        shelterLp.width = finalWidth;
+        shelterLp.height = DisplayUtil.dip2px(this, 30);
         videoSv.setLayoutParams(lp);
         controlRl.setLayoutParams(controlLp);
+        shelterDv.setLayoutParams(shelterLp);
         mSurfaceHolder.setFixedSize(finalWidth, finalHeight);
     }
 
@@ -353,6 +381,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
             if (orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
 //                baseTopBar.setVisibility(View.VISIBLE);
                 titleTv.setVisibility(View.GONE);
+                shelterDv.setVisibility(View.GONE);
                 chooseUriBtn.setVisibility(View.VISIBLE);
                 resizeSurfaceView(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                 fullScreenIv.setImageResource(R.drawable.ic_full_screen1);
@@ -360,6 +389,8 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
 //                baseTopBar.setVisibility(View.GONE);
                 titleTv.setVisibility(View.VISIBLE);
                 chooseUriBtn.setVisibility(View.GONE);
+                shelterDv.setVisibility(View.VISIBLE);
+                shelterDv.toLastPosition();
                 resizeSurfaceView(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                 fullScreenIv.setImageResource(R.drawable.ic_full_screen_exit1);
             }
@@ -419,9 +450,9 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                 }
                 break;
             case R.id.video_sv:
-                if (controlRl.isShown()){
+                if (controlRl.isShown()) {
                     hideControl();
-                }else {
+                } else {
                     showControl();
                 }
                 break;
