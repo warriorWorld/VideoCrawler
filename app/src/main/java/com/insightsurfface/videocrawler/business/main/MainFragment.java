@@ -137,7 +137,7 @@ public class MainFragment extends BaseRefreshListFragment {
                 mAdapter.setOnRecycleItemClickListener(new OnRecycleItemClickListener() {
                     @Override
                     public void onItemClick(int position) {
-                        VideoActivity.startActivity(getActivity(), videoList.get(position).getPath());
+                        VideoActivity.startActivity(getActivity(), videoList.get(position).getPath(),videoList.get(position).getTitle());
                     }
                 });
                 mAdapter.setOnRecycleItemLongClickListener(new OnRecycleItemLongClickListener() {

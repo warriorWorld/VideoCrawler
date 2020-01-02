@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -19,9 +20,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.insightsurface.lib.utils.Logger;
+import com.insightsurface.lib.utils.NumberUtil;
 import com.insightsurfface.videocrawler.R;
 import com.insightsurfface.videocrawler.base.BaseActivity;
 import com.insightsurfface.videocrawler.utils.DisplayUtil;
+import com.insightsurfface.videocrawler.utils.StringUtil;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
@@ -55,22 +58,27 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case UPDATE_TIME:
-//                    updateTime();
-//                    mHandler.sendEmptyMessageDelayed(UPDATE_TIME, 500);
+                    updateTime();
+                    mHandler.sendEmptyMessageDelayed(UPDATE_TIME, 500);
                     break;
                 case HIDE_CONTROL:
-                    controlRl.setVisibility(View.GONE);
+                    hideControl();
                     break;
             }
         }
     };
     private ImageView playIv;
+    private String title;
+    private int duration = 0;
+    private int finalPosition = 0;
+    private boolean userControling = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
         url = intent.getStringExtra("url");
+        title = intent.getStringExtra("title");
         screenWidth = DisplayUtil.getScreenWidth(this);
         screenHeight = DisplayUtil.getScreenRealHeight(this);
 
@@ -83,9 +91,10 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         hideBaseTopBar();
     }
 
-    public static void startActivity(Context context, String fileUrl) {
+    public static void startActivity(Context context, String fileUrl, String title) {
         Intent intent = new Intent(context, VideoActivity.class);
         intent.putExtra("url", fileUrl);
+        intent.putExtra("title", title);
         context.startActivity(intent);
     }
 
@@ -112,6 +121,15 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         }
     }
 
+    /**
+     * 更新播放时间
+     */
+    private void updateTime() {
+        int currentSecond = (int) ((mPlayer.getCurrentPosition() / 1000f));
+        timeTv.setText(StringUtil.second2Hour(currentSecond) + "/" + StringUtil.second2Hour(duration));
+        progressSb.setProgress(currentSecond);
+    }
+
     @Override
     protected void initUI() {
         super.initUI();
@@ -120,6 +138,33 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         controlRl = (RelativeLayout) findViewById(R.id.control_rl);
         titleTv = (TextView) findViewById(R.id.video_title_tv);
         progressSb = (DiscreteSeekBar) findViewById(R.id.progress_sb);
+        progressSb.setMin(0);
+        progressSb.setNumericTransformer(new SeekbarTransformer());
+        progressSb.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
+            @Override
+            public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
+                finalPosition = value;
+                if (userControling) {
+                    mPlayer.seekTo(finalPosition * 1000);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
+                playPause();
+                userControling = true;
+            }
+
+            @Override
+            public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
+                if (finalPosition >= 0) {
+//                    mPlayer.seekTo(finalPosition * 1000);
+                    userControling = false;
+                    playStart();
+                    hideControl();
+                }
+            }
+        });
         timeTv = (TextView) findViewById(R.id.time_tv);
         fullScreenIv = (ImageView) findViewById(R.id.full_screen_iv);
         divideV = findViewById(R.id.divide_v);
@@ -152,6 +197,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         mPlayer.seekTo(mPlayer.getCurrentPosition());
     }
 
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -178,11 +224,13 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         }
         mPlayer.setDisplay(mSurfaceHolder);
         mPlayer.start();
+        playIv.setImageResource(R.drawable.ic_pause);
     }
 
     private void playPause() {
         if (mPlayer != null && mPlayer.isPlaying()) {
             mPlayer.pause();
+            playIv.setImageResource(R.drawable.ic_play);
         }
     }
 
@@ -222,6 +270,9 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
 
     @Override
     public void onPrepared(MediaPlayer mp) {
+        duration = (int) (mPlayer.getDuration() / 1000f);
+        progressSb.setMax(duration);
+        titleTv.setText(title);
         playStart();
     }
 
@@ -304,6 +355,21 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         return getApplicationContext().getResources().getConfiguration().orientation;
     }
 
+    private void showControl() {
+        controlRl.setVisibility(View.VISIBLE);
+        mHandler.removeMessages(HIDE_CONTROL);
+        mHandler.sendEmptyMessage(UPDATE_TIME);
+        mHandler.sendEmptyMessageDelayed(HIDE_CONTROL, 5000);
+    }
+
+    private void hideControl() {
+        if (userControling) {
+            return;
+        }
+        mHandler.removeMessages(UPDATE_TIME);
+        controlRl.setVisibility(View.GONE);
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -317,16 +383,14 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
             case R.id.play_iv:
                 if (mPlayer.isPlaying()) {
                     playPause();
-                    playIv.setImageResource(R.drawable.ic_play);
+                    showControl();
                 } else {
                     playStart();
-                    playIv.setImageResource(R.drawable.ic_pause);
+                    hideControl();
                 }
                 break;
             case R.id.video_sv:
-                controlRl.setVisibility(View.VISIBLE);
-                mHandler.removeMessages(HIDE_CONTROL);
-                mHandler.sendEmptyMessageDelayed(HIDE_CONTROL, 5000);
+                showControl();
                 break;
         }
     }

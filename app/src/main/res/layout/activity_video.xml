@@ -28,6 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_below="@+id/divide_v"
+            android:singleLine="true"
             android:background="@color/control_bg"
             android:gravity="center_vertical"
             android:paddingLeft="20dp"
@@ -44,11 +45,11 @@
 
             <ImageView
                 android:id="@+id/play_iv"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="10dp"
-                android:src="@drawable/ic_play"></ImageView>
+                android:layout_marginLeft="15dp"
+                android:src="@drawable/ic_pause"></ImageView>
 
             <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
                 android:id="@+id/progress_sb"
@@ -76,11 +77,11 @@
 
             <ImageView
                 android:id="@+id/full_screen_iv"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="10dp"
+                android:layout_marginRight="15dp"
                 android:src="@drawable/ic_full_screen1"></ImageView>
         </RelativeLayout>
     </RelativeLayout>
