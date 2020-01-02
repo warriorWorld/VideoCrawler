@@ -141,14 +141,14 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
      * 更新播放时间
      */
     private void updateTime() {
-        if (null==mPlayer){
+        if (null == mPlayer) {
             return;
         }
         try {
             int currentSecond = (int) ((mPlayer.getCurrentPosition() / 1000f));
             timeTv.setText(StringUtil.second2Hour(currentSecond) + "/" + StringUtil.second2Hour(duration));
             progressSb.setProgress(currentSecond);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -161,7 +161,19 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         controlRl = (RelativeLayout) findViewById(R.id.control_rl);
         shelterDv = findViewById(R.id.shelter_dv);
         shelterDv.setSavePosition(true);
-        shelterDv.setLastPosKey("POS_KEY"+id);
+        shelterDv.setLastPosKey("POS_KEY" + id);
+        shelterDv.setOnDragListener(new ShelterView.OnDragListener() {
+            @Override
+            public void dragStart() {
+                playPause();
+                hideControl();
+            }
+
+            @Override
+            public void dragEnd() {
+                playStart();
+            }
+        });
         titleTv = (TextView) findViewById(R.id.video_title_tv);
         progressSb = (DiscreteSeekBar) findViewById(R.id.progress_sb);
         progressSb.setMin(0);
@@ -420,6 +432,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         mHandler.removeMessages(HIDE_CONTROL);
         mHandler.sendEmptyMessage(UPDATE_TIME);
         mHandler.sendEmptyMessageDelayed(HIDE_CONTROL, 5000);
+        shelterDv.setVisibility(View.GONE);
     }
 
     private void hideControl() {
@@ -428,6 +441,9 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         }
         mHandler.removeMessages(UPDATE_TIME);
         controlRl.setVisibility(View.GONE);
+        if (!isPortrait()) {
+            shelterDv.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

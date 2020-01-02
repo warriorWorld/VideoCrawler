@@ -32,6 +32,7 @@ public class ShelterView extends ImageView {
     private boolean savePosition = false;
     private OnClickListener mOnClickListener;
     private String lastPosKey = ShareKeys.LAST_DRAGVIEW_POSITION;
+    private OnDragListener mOnDragListener;
 
     public ShelterView(Context context) {
         super(context);
@@ -123,6 +124,9 @@ public class ShelterView extends ImageView {
     private void toEdge() {
         savePosition();
         edged = true;
+        if (null!=mOnDragListener){
+            mOnDragListener.dragEnd();
+        }
     }
 
     @Override
@@ -139,6 +143,9 @@ public class ShelterView extends ImageView {
                     downY = event.getY();
                     xDistance = 0;
                     yDistance = 0;
+                    if (null!=mOnDragListener){
+                        mOnDragListener.dragStart();
+                    }
                     break;
                 case MotionEvent.ACTION_MOVE:
                     xDistance = event.getX() - downX;
@@ -196,5 +203,15 @@ public class ShelterView extends ImageView {
 
     public void setLastPosKey(String lastPosKey) {
         this.lastPosKey = lastPosKey;
+    }
+
+    public void setOnDragListener(OnDragListener onDragListener) {
+        mOnDragListener = onDragListener;
+    }
+
+    public interface OnDragListener {
+        void dragStart();
+
+        void dragEnd();
     }
 }
