@@ -2,18 +2,22 @@ package com.insightsurfface.videocrawler.business.video;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 
-import com.insightsurface.lib.utils.DisplayUtil;
+import com.insightsurface.lib.utils.Logger;
 import com.insightsurfface.videocrawler.R;
 import com.insightsurfface.videocrawler.base.BaseActivity;
+import com.insightsurfface.videocrawler.utils.DisplayUtil;
 
 public class VideoActivity extends BaseActivity implements SurfaceHolder.Callback,
         MediaPlayer.OnCompletionListener,
@@ -30,14 +34,24 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private MediaPlayer mPlayer;
     private String url;
     private SurfaceHolder mSurfaceHolder;
+    private int videoWidth = 0, videoHeight = 0;
+    private int screenWidth = 0, screenHeight = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
         url = intent.getStringExtra("url");
+        screenWidth = DisplayUtil.getScreenWidth(this);
+        screenHeight = DisplayUtil.getScreenRealHeight(this);
+
         initSurfaceView();
         initPlayer();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            setStatusBarFullTransparent();
+            setFitSystemWindow(false);
+        }
+        hideBaseTopBar();
     }
 
     public static void startActivity(Context context, String fileUrl) {
@@ -171,19 +185,75 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
 
     @Override
     public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
+        Logger.d("onVideoSizeChanged");
+        videoWidth = width;
+        videoHeight = height;
+        resizeSurfaceView();
+    }
+
+    private void resizeSurfaceView() {
+        resizeSurfaceView(getOrientation());
+    }
+
+    private void resizeSurfaceView(int orientation) {
         ViewGroup.LayoutParams lp = videoSv.getLayoutParams();
-        int screenWidth = DisplayUtil.getScreenWidth(this);
-        int finalHeight = (int) ((Double.valueOf(screenWidth) / Double.valueOf(width)) * height);
+        int finalWidth = 0, finalHeight = 0;
+        switch (orientation) {
+            case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
+                finalWidth = screenWidth;
+                finalHeight = (int) ((Double.valueOf(screenWidth) / Double.valueOf(videoWidth)) * videoHeight);
+                break;
+            default:
+                //这个方法是相对于竖屏的 所以width实际是height
+                finalWidth = screenHeight;
+                //这个方法是自适应的 所以width就是width
+                finalHeight = screenWidth;
+                break;
+        }
+        lp.width = finalWidth;
         lp.height = finalHeight;
         videoSv.setLayoutParams(lp);
-//        mSurfaceHolder.setFixedSize(width,height);
+        mSurfaceHolder.setFixedSize(finalWidth, finalHeight);
+    }
+
+    private void setOrientation(int orientation) {
+        if (orientation != getOrientation()) {
+            setRequestedOrientation(orientation);
+            if (orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+                baseTopBar.setVisibility(View.VISIBLE);
+                chooseUriBtn.setVisibility(View.VISIBLE);
+                resizeSurfaceView(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            } else {
+                baseTopBar.setVisibility(View.GONE);
+                chooseUriBtn.setVisibility(View.GONE);
+                resizeSurfaceView(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isPortrait()) {
+            super.onBackPressed();
+        } else {
+            setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+    }
+
+    private boolean isPortrait() {
+        return getOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+    }
+
+    // 判断当前屏幕朝向是否为竖屏
+    private int getOrientation() {
+        return getApplicationContext().getResources().getConfiguration().orientation;
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.choose_uri_btn:
-                playStart();
+                setOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
                 break;
         }
     }
