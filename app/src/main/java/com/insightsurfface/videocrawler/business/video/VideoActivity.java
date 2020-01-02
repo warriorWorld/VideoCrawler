@@ -185,8 +185,6 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         shelterDv.setOnDragListener(new ShelterView.OnDragListener() {
             @Override
             public void dragStart() {
-                playPause();
-                hideControl();
             }
 
             @Override
@@ -584,13 +582,19 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                 }
                 break;
             case R.id.play_iv:
-            case R.id.shelter_dv:
                 if (mPlayer.isPlaying()) {
                     playPause();
                     showControl();
                 } else {
                     playStart();
                     hideControl();
+                }
+                break;
+            case R.id.shelter_dv:
+                if (mPlayer.isPlaying()) {
+                    playPause();
+                } else {
+                    playStart();
                 }
                 break;
             case R.id.video_sv:
