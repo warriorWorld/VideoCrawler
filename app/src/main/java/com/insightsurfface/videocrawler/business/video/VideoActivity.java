@@ -4,6 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.media.MediaPlayer;
 import android.media.SubtitleData;
 import android.net.Uri;
@@ -54,7 +58,8 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         MediaPlayer.OnPreparedListener,
         MediaPlayer.OnSeekCompleteListener,
         MediaPlayer.OnVideoSizeChangedListener,
-        View.OnClickListener {
+        View.OnClickListener,
+        SensorEventListener {
     //    private VideoView crawlerVv;
     private SurfaceView videoSv;
     private String testURL = "http://ugcws.video.gtimg.com/uwMROfz2r5zAoaQXGdGnC2dfJ6nM3DInWQqp2axRinGnB-kO/r3043xtjgug.p701.1.mp4?sdtfrom=v1104&guid=4c68826f6ff46a643a05b409826286dd&vkey=E16F961FF0E960562170443D6717CE8CA5CF7216E939E0E7B3B330999D3596F7ED1AAFD38A785573A0D768BAD5814B0FC39C816DDC8A3010586FDAD399A7537BF9969F79C2051082E8A275C66CBB92E419CA5D99C5504123D86E2FA67FF34F618A8448C1888D8A048F4AB211E112A407E23051D7BE2367CB6059549099F86C23";
@@ -97,6 +102,8 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private TranslateDialog translateResultDialog;
     private OnlyEditDialog searchDialog;
     private ImageView translateIv;
+    private SensorManager sManager;
+    private Sensor mSensorAccelerometer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +123,12 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
             setFitSystemWindow(false);
         }
         hideBaseTopBar();
+        initSensorManager();
+    }
+
+    private void initSensorManager() {
+        sManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        mSensorAccelerometer = sManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     }
 
     public static void startActivity(Context context, int id, String fileUrl, String title) {
@@ -273,12 +286,14 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         super.onPause();
         playPause();
         saveState();
+        sManager.unregisterListener(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
 //        playStart();
+        sManager.registerListener(this, mSensorAccelerometer, SensorManager.SENSOR_DELAY_UI);
     }
 
     @Override
@@ -611,5 +626,33 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                 showSearchDialog();
                 break;
         }
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            if (isPortrait()) {
+                return;
+            }
+            try {
+                float gyroscope_x = event.values[0];
+
+//                readProgressTv.setText(gyroscope_x + "\n" + gyroscope_y + "\n" + gyroscope_z);
+                if (gyroscope_x >= 8 && Configure.currentOrientation != 90) {
+                    Configure.currentOrientation = 90;
+                    setOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                } else if (gyroscope_x <= -8 && Configure.currentOrientation != 270) {
+                    Configure.currentOrientation = 270;
+                    setOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
     }
 }
