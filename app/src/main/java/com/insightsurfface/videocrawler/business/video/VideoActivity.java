@@ -8,8 +8,10 @@ import android.os.Bundle;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.insightsurface.lib.utils.DisplayUtil;
 import com.insightsurfface.videocrawler.R;
 import com.insightsurfface.videocrawler.base.BaseActivity;
 
@@ -27,6 +29,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private Button chooseUriBtn;
     private MediaPlayer mPlayer;
     private String url;
+    private SurfaceHolder mSurfaceHolder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +54,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
 
     private void initPlayer() {
         mPlayer = new MediaPlayer();
+        mPlayer.setScreenOnWhilePlaying(true);
         mPlayer.setOnCompletionListener(this);
         mPlayer.setOnErrorListener(this);
         mPlayer.setOnInfoListener(this);
@@ -80,8 +84,54 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+        mSurfaceHolder = holder;
         mPlayer.setDisplay(holder);
         mPlayer.prepareAsync();
+        //为了让暂停不至于黑屏
+        mPlayer.seekTo(mPlayer.getCurrentPosition());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        playPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+//        playStart();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mPlayer != null) {
+            mPlayer.release();
+        }
+    }
+
+    private void playStart() {
+        if (isPlaying()) {
+            return;
+        }
+        mPlayer.setDisplay(mSurfaceHolder);
+        mPlayer.start();
+    }
+
+    private void playPause() {
+        if (mPlayer != null && mPlayer.isPlaying()) {
+            mPlayer.pause();
+        }
+    }
+
+    /**
+     * 视频状态
+     *
+     * @return 视频是否正在播放
+     */
+    public boolean isPlaying() {
+        return mPlayer != null && mPlayer.isPlaying();
     }
 
     @Override
@@ -111,7 +161,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-
+        playStart();
     }
 
     @Override
@@ -121,14 +171,19 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
 
     @Override
     public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
-
+        ViewGroup.LayoutParams lp = videoSv.getLayoutParams();
+        int screenWidth = DisplayUtil.getScreenWidth(this);
+        int finalHeight = (int) ((Double.valueOf(screenWidth) / Double.valueOf(width)) * height);
+        lp.height = finalHeight;
+        videoSv.setLayoutParams(lp);
+//        mSurfaceHolder.setFixedSize(width,height);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.choose_uri_btn:
-                mPlayer.start();
+                playStart();
                 break;
         }
     }
