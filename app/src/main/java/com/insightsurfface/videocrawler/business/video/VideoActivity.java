@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -20,7 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.insightsurface.lib.utils.Logger;
-import com.insightsurface.lib.utils.NumberUtil;
+import com.insightsurface.lib.utils.SharedPreferencesUtils;
 import com.insightsurfface.videocrawler.R;
 import com.insightsurfface.videocrawler.base.BaseActivity;
 import com.insightsurfface.videocrawler.utils.DisplayUtil;
@@ -72,11 +71,13 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private int duration = 0;
     private int finalPosition = 0;
     private boolean userControling = false;
+    private int id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
+        id = intent.getIntExtra("id", 0);
         url = intent.getStringExtra("url");
         title = intent.getStringExtra("title");
         screenWidth = DisplayUtil.getScreenWidth(this);
@@ -91,8 +92,9 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         hideBaseTopBar();
     }
 
-    public static void startActivity(Context context, String fileUrl, String title) {
+    public static void startActivity(Context context, int id, String fileUrl, String title) {
         Intent intent = new Intent(context, VideoActivity.class);
+        intent.putExtra("id", id);
         intent.putExtra("url", fileUrl);
         intent.putExtra("title", title);
         context.startActivity(intent);
@@ -197,11 +199,24 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         mPlayer.seekTo(mPlayer.getCurrentPosition());
     }
 
+    private void saveState() {
+        SharedPreferencesUtils.setSharedPreferencesData(this, id + "progress",
+                mPlayer.getCurrentPosition());
+    }
+
+    private void recoverState() {
+        int p = SharedPreferencesUtils.getIntSharedPreferencesData(this,
+                id + "progress");
+        if (p >= 0) {
+            mPlayer.seekTo(p);
+        }
+    }
 
     @Override
     protected void onPause() {
         super.onPause();
         playPause();
+        saveState();
     }
 
     @Override
@@ -211,9 +226,22 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     }
 
     @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        recoverState();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        saveState();
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         if (mPlayer != null) {
+            saveState();
             mPlayer.release();
         }
     }
@@ -273,6 +301,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         duration = (int) (mPlayer.getDuration() / 1000f);
         progressSb.setMax(duration);
         titleTv.setText(title);
+        recoverState();
         playStart();
     }
 
@@ -390,7 +419,11 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                 }
                 break;
             case R.id.video_sv:
-                showControl();
+                if (controlRl.isShown()){
+                    hideControl();
+                }else {
+                    showControl();
+                }
                 break;
         }
     }

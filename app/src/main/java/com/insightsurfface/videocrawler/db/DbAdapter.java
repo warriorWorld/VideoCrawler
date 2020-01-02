@@ -79,11 +79,14 @@ public class DbAdapter {
             String name = cursor.getString(cursor.getColumnIndex("title"));
             String path = cursor
                     .getString(cursor.getColumnIndex("path"));
+            int id = cursor
+                    .getInt(cursor.getColumnIndex("id"));
             int duration = cursor
                     .getInt(cursor.getColumnIndex("duration"));
             int watchedTime = cursor
                     .getInt(cursor.getColumnIndex("watched_time"));
             VideoBean item = new VideoBean();
+            item.setId(id);
             item.setPath(path);
             item.setTitle(name);
             item.setDuration(duration);

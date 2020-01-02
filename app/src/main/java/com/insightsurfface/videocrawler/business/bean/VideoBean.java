@@ -3,6 +3,7 @@ package com.insightsurfface.videocrawler.business.bean;
 import com.insightsurface.lib.bean.BaseBean;
 
 public class VideoBean extends BaseBean {
+    private int id;
     private String title;
     private String path;
     private int duration;
@@ -38,5 +39,13 @@ public class VideoBean extends BaseBean {
 
     public void setWatched_time(int watched_time) {
         this.watched_time = watched_time;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
