@@ -28,4 +28,5 @@ dependencies {
     implementation 'com.github.warriorWorld:SuhangLib:1.0.9'
     implementation 'org.greenrobot:eventbus:3.0.0'
     implementation 'pub.devrel:easypermissions:1.0.0'
+    implementation 'org.adw.library:discrete-seekbar:1.0.1'
 }

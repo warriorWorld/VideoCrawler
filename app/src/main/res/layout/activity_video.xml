@@ -11,10 +11,85 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"></SurfaceView>
 
+    <RelativeLayout
+        android:id="@+id/control_rl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <View
+            android:id="@+id/divide_v"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/control_bg"></View>
+
+        <TextView
+            android:id="@+id/video_title_tv"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_below="@+id/divide_v"
+            android:background="@color/control_bg"
+            android:gravity="center_vertical"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:text="title"
+            android:textColor="@color/white"
+            android:textSize="15sp"></TextView>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/control_bg">
+
+            <ImageView
+                android:id="@+id/play_iv"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/ic_play"></ImageView>
+
+            <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+                android:id="@+id/progress_sb"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_toLeftOf="@+id/time_tv"
+                android:layout_toRightOf="@+id/play_iv"
+                android:visibility="visible"
+                app:dsb_max="100"
+                app:dsb_min="1" />
+
+            <TextView
+                android:id="@+id/time_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:layout_toLeftOf="@+id/full_screen_iv"
+                android:text="00:00/30:00"
+                android:textColor="@color/white"
+                android:textSize="11sp"></TextView>
+
+            <ImageView
+                android:id="@+id/full_screen_iv"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/ic_full_screen1"></ImageView>
+        </RelativeLayout>
+    </RelativeLayout>
+
     <Button
         android:id="@+id/choose_uri_btn"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
-        android:text="选择视频文件"></Button>
+        android:text="选择视频文件"
+        android:visibility="gone"></Button>
 </RelativeLayout>

@@ -7,17 +7,23 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.insightsurface.lib.utils.Logger;
 import com.insightsurfface.videocrawler.R;
 import com.insightsurfface.videocrawler.base.BaseActivity;
 import com.insightsurfface.videocrawler.utils.DisplayUtil;
+
+import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
 public class VideoActivity extends BaseActivity implements SurfaceHolder.Callback,
         MediaPlayer.OnCompletionListener,
@@ -36,6 +42,29 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private SurfaceHolder mSurfaceHolder;
     private int videoWidth = 0, videoHeight = 0;
     private int screenWidth = 0, screenHeight = 0;
+    private RelativeLayout controlRl;
+    private TextView titleTv;
+    private DiscreteSeekBar progressSb;
+    private TextView timeTv;
+    private ImageView fullScreenIv;
+    private View divideV;
+    public static final int UPDATE_TIME = 0x0001;
+    public static final int HIDE_CONTROL = 0x0002;
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case UPDATE_TIME:
+//                    updateTime();
+//                    mHandler.sendEmptyMessageDelayed(UPDATE_TIME, 500);
+                    break;
+                case HIDE_CONTROL:
+                    controlRl.setVisibility(View.GONE);
+                    break;
+            }
+        }
+    };
+    private ImageView playIv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +117,24 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         super.initUI();
         videoSv = findViewById(R.id.video_sv);
         chooseUriBtn = findViewById(R.id.choose_uri_btn);
+        controlRl = (RelativeLayout) findViewById(R.id.control_rl);
+        titleTv = (TextView) findViewById(R.id.video_title_tv);
+        progressSb = (DiscreteSeekBar) findViewById(R.id.progress_sb);
+        timeTv = (TextView) findViewById(R.id.time_tv);
+        fullScreenIv = (ImageView) findViewById(R.id.full_screen_iv);
+        divideV = findViewById(R.id.divide_v);
+        int height = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            height = getResources().getDimensionPixelSize(resourceId);
+        }
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, height);
+        divideV.setLayoutParams(params);
+        playIv = findViewById(R.id.play_iv);
+
+        playIv.setOnClickListener(this);
+        videoSv.setOnClickListener(this);
+        fullScreenIv.setOnClickListener(this);
         chooseUriBtn.setOnClickListener(this);
     }
 
@@ -197,6 +244,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
 
     private void resizeSurfaceView(int orientation) {
         ViewGroup.LayoutParams lp = videoSv.getLayoutParams();
+        ViewGroup.LayoutParams controlLp = controlRl.getLayoutParams();
         int finalWidth = 0, finalHeight = 0;
         switch (orientation) {
             case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
@@ -212,7 +260,10 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         }
         lp.width = finalWidth;
         lp.height = finalHeight;
+        controlLp.width = finalWidth;
+        controlLp.height = finalHeight;
         videoSv.setLayoutParams(lp);
+        controlRl.setLayoutParams(controlLp);
         mSurfaceHolder.setFixedSize(finalWidth, finalHeight);
     }
 
@@ -220,13 +271,17 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         if (orientation != getOrientation()) {
             setRequestedOrientation(orientation);
             if (orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
-                baseTopBar.setVisibility(View.VISIBLE);
+//                baseTopBar.setVisibility(View.VISIBLE);
+                titleTv.setVisibility(View.GONE);
                 chooseUriBtn.setVisibility(View.VISIBLE);
                 resizeSurfaceView(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                fullScreenIv.setImageResource(R.drawable.ic_full_screen1);
             } else {
-                baseTopBar.setVisibility(View.GONE);
+//                baseTopBar.setVisibility(View.GONE);
+                titleTv.setVisibility(View.VISIBLE);
                 chooseUriBtn.setVisibility(View.GONE);
                 resizeSurfaceView(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                fullScreenIv.setImageResource(R.drawable.ic_full_screen_exit1);
             }
         }
     }
@@ -252,8 +307,26 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.choose_uri_btn:
-                setOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+            case R.id.full_screen_iv:
+                if (isPortrait()) {
+                    setOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+                } else {
+                    setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                }
+                break;
+            case R.id.play_iv:
+                if (mPlayer.isPlaying()) {
+                    playPause();
+                    playIv.setImageResource(R.drawable.ic_play);
+                } else {
+                    playStart();
+                    playIv.setImageResource(R.drawable.ic_pause);
+                }
+                break;
+            case R.id.video_sv:
+                controlRl.setVisibility(View.VISIBLE);
+                mHandler.removeMessages(HIDE_CONTROL);
+                mHandler.sendEmptyMessageDelayed(HIDE_CONTROL, 5000);
                 break;
         }
     }
