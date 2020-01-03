@@ -18,11 +18,11 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/video_thumbnail_iv"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="-20dp"
+        android:layout_marginTop="-40dp"
         android:layout_marginRight="10dp"
         android:text="00:00"
-        android:textColor="@color/main_text_color_gray"
-        android:textSize="11sp"></TextView>
+        android:textColor="@color/white"
+        android:textSize="13sp"></TextView>
 
     <TextView
         android:id="@+id/title_tv"

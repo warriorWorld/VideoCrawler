@@ -13,6 +13,7 @@ import com.insightsurface.lib.listener.OnRecycleItemClickListener;
 import com.insightsurface.lib.listener.OnRecycleItemLongClickListener;
 import com.insightsurfface.videocrawler.R;
 import com.insightsurfface.videocrawler.bean.VideoBean;
+import com.insightsurfface.videocrawler.utils.StringUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -73,7 +74,7 @@ public class VideoAdapter extends BaseRecyclerAdapter {
     protected void refreshNormalViewHolder(RecyclerView.ViewHolder viewHolder, final int position) {
         final VideoBean item = list.get(position);
         ((NormalViewHolder) viewHolder).titleTv.setText(item.getTitle());
-        ((NormalViewHolder) viewHolder).durationTv.setText(item.getDuration()+"");
+        ((NormalViewHolder) viewHolder).durationTv.setText(StringUtil.second2Hour(item.getDuration()));
         ((NormalViewHolder) viewHolder).videoLl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

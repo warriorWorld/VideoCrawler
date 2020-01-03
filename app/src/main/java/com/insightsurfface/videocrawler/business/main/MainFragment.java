@@ -79,7 +79,7 @@ public class MainFragment extends BaseRefreshListFragment {
      * 调用文件选择软件来选择文件
      **/
     public void showFileChooser() {
-        baseToast.showToast("选择视频文件（目前支持3gp,mp4,avi）");
+//        baseToast.showToast("选择视频文件（目前支持3gp,mp4,avi）");
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
 //        intent.setType("text/plain");//设置类型和后缀 txt
         intent.setType("video/*");//设置类型和后缀  全部文件
@@ -92,9 +92,9 @@ public class MainFragment extends BaseRefreshListFragment {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String duration=VideoUtil.getRingDuring(path);
+                int duration=VideoUtil.getVideoDuration(getActivity(),Uri.parse(path));
 
-                db.insertVideoTableTb(getActivity(), path, StringUtil.cutString(path, '/', '.'), 0, 0);
+                db.insertVideoTableTb(getActivity(), path, StringUtil.cutString(path, '/', '.'), duration, 0);
                 SingleLoadBarUtil.getInstance().dismissLoadBar();
                 mHandler.sendEmptyMessage(UPDATE_LIST);
             }
