@@ -78,6 +78,8 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private View divideV;
     public static final int UPDATE_TIME = 0x0001;
     public static final int HIDE_CONTROL = 0x0002;
+    public static final int RELOCATION_PROGRESS = 0x0003;
+    private int lastPauseLocation = 0;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -88,6 +90,16 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                     break;
                 case HIDE_CONTROL:
                     hideControl();
+                    break;
+                case RELOCATION_PROGRESS:
+                    try {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            mPlayer.seekTo(lastPauseLocation,MediaPlayer.SEEK_CLOSEST);
+                        }
+                        Logger.d("pause:  "+lastPauseLocation+"  start:  "+mPlayer.getCurrentPosition());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     break;
             }
         }
@@ -340,6 +352,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         mPlayer.start();
         playIv.setImageResource(R.drawable.ic_pause);
         centerPlayIv.setImageResource(R.drawable.ic_pause_white);
+        mHandler.removeMessages(RELOCATION_PROGRESS);
     }
 
     private void playPause() {
@@ -347,6 +360,8 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
             mPlayer.pause();
             playIv.setImageResource(R.drawable.ic_play);
             centerPlayIv.setImageResource(R.drawable.ic_play_white);
+            lastPauseLocation = mPlayer.getCurrentPosition();
+            mHandler.sendEmptyMessageDelayed(RELOCATION_PROGRESS, 5000);
         }
     }
 
@@ -652,15 +667,9 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                 break;
             case R.id.back_iv:
                 mPlayer.seekTo(mPlayer.getCurrentPosition() - 5000);
-                if (!mPlayer.isPlaying()) {
-                    playPause();
-                }
                 break;
             case R.id.forward_iv:
                 mPlayer.seekTo(mPlayer.getCurrentPosition() + 5000);
-                if (!mPlayer.isPlaying()) {
-                    playPause();
-                }
                 break;
         }
     }
