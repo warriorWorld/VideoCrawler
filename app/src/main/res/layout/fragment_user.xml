@@ -233,6 +233,7 @@
             android:layout_marginRight="20dp"
             android:src="@drawable/forward" />
     </RelativeLayout>
+
     <RelativeLayout
         android:id="@+id/jump_frame_rl"
         android:layout_width="match_parent"
@@ -267,12 +268,13 @@
             android:layout_marginRight="20dp"
             android:src="@drawable/forward" />
     </RelativeLayout>
+
     <TextView
         android:id="@+id/qq_tv"
-        android:layout_marginTop="12dp"
-        android:layout_marginLeft="12dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="12dp"
         android:text="获取最新版App，请加qq群：782685214。"
         android:textColor="@color/main_text_color_gray"
         android:textSize="15sp"></TextView>

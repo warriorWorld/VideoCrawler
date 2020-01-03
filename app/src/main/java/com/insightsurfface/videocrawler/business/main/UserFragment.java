@@ -16,8 +16,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.insightsurface.lib.base.BaseFragment;
+import com.insightsurface.lib.listener.OnEditResultListener;
 import com.insightsurface.lib.utils.NumberUtil;
+import com.insightsurface.lib.utils.SharedPreferencesUtils;
+import com.insightsurface.lib.widget.dialog.EditDialog;
 import com.insightsurfface.videocrawler.R;
+import com.insightsurfface.videocrawler.config.ShareKeys;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -36,6 +40,7 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
     private RelativeLayout shareRl;
     private RelativeLayout keyboardRl;
     private RelativeLayout shelterRl;
+    private RelativeLayout jumpFrameRl;
     private TextView qqTv;
     private ClipboardManager clip;//复制文本用
     private final String QQ_GROUP = "782685214";
@@ -64,6 +69,7 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
         shareRl = (RelativeLayout) view.findViewById(R.id.share_rl);
         keyboardRl = (RelativeLayout) view.findViewById(R.id.keyboard_rl);
         shelterRl = (RelativeLayout) view.findViewById(R.id.shelter_rl);
+        jumpFrameRl = view.findViewById(R.id.jump_frame_rl);
         qqTv = (TextView) view.findViewById(R.id.qq_tv);
         qqTv.setText
                 ("获取最新版App，请加qq群：" + QQ_GROUP + "（点击群号可复制）。",
@@ -112,6 +118,7 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
         keyboardRl.setOnClickListener(this);
         shelterRl.setOnClickListener(this);
         userIv.setOnClickListener(this);
+        jumpFrameRl.setOnClickListener(this);
     }
 
     private void refreshUI() {
@@ -120,11 +127,59 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
         dayOfWeekTv.setText(currentDayOfWeek);
     }
 
+    private void showShelterOptionDialog() {
+        EditDialog dialog = new EditDialog(getActivity());
+        dialog.setOnEditResultListener(new OnEditResultListener() {
+            @Override
+            public void onResult(String text) {
+                SharedPreferencesUtils.setSharedPreferencesData
+                        (getActivity(), ShareKeys.SHELTER_HEIGHT, Integer.valueOf(text));
+            }
+
+            @Override
+            public void onCancelClick() {
+
+            }
+        });
+        dialog.show();
+        dialog.setOnlyNumInput(true);
+        dialog.setTitle("遮挡高度设置");
+        dialog.setHint("默认值为30dp 仅供参考");
+        dialog.setMessage("请输入要设置的遮挡高度(单位：dp)，如需隐藏遮挡请输入0。");
+    }
+
+    private void showJumpFrameOptionDialog() {
+        EditDialog dialog = new EditDialog(getActivity());
+        dialog.setOnEditResultListener(new OnEditResultListener() {
+            @Override
+            public void onResult(String text) {
+                SharedPreferencesUtils.setSharedPreferencesData
+                        (getActivity(), ShareKeys.JUMP_FRAME_GAP, Integer.valueOf(text));
+            }
+
+            @Override
+            public void onCancelClick() {
+
+            }
+        });
+        dialog.show();
+        dialog.setOnlyNumInput(true);
+        dialog.setTitle("跳帧间隔设置");
+        dialog.setHint("默认值为5000毫秒 仅供参考");
+        dialog.setMessage("请输入要设置的跳帧间隔(单位：毫秒 1秒=1000毫秒)，不需要请输入0。");
+    }
+
     @Override
     public void onClick(View v) {
         Intent intent = null;
         switch (v.getId()) {
             case R.id.user_iv:
+                break;
+            case R.id.shelter_rl:
+                showShelterOptionDialog();
+                break;
+            case R.id.jump_frame_rl:
+                showJumpFrameOptionDialog();
                 break;
         }
         if (null != intent) {

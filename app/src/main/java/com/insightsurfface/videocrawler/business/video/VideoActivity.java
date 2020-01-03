@@ -94,9 +94,9 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                 case RELOCATION_PROGRESS:
                     try {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            mPlayer.seekTo(lastPauseLocation,MediaPlayer.SEEK_CLOSEST);
+                            mPlayer.seekTo(lastPauseLocation, MediaPlayer.SEEK_CLOSEST);
                         }
-                        Logger.d("pause:  "+lastPauseLocation+"  start:  "+mPlayer.getCurrentPosition());
+                        Logger.d("pause:  " + lastPauseLocation + "  start:  " + mPlayer.getCurrentPosition());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -118,6 +118,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private SensorManager sManager;
     private Sensor mSensorAccelerometer;
     private ImageView backIv, forwardIv, centerPlayIv;
+    private int jumpGap, shelterHeight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +126,8 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         id = intent.getIntExtra("id", 0);
         url = intent.getStringExtra("url");
         title = intent.getStringExtra("title");
+        jumpGap=SharedPreferencesUtils.getIntSharedPreferencesData(this,ShareKeys.JUMP_FRAME_GAP,-1);
+        shelterHeight=SharedPreferencesUtils.getIntSharedPreferencesData(this,ShareKeys.SHELTER_HEIGHT,-1);
         super.onCreate(savedInstanceState);
         clip = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         screenWidth = DisplayUtil.getScreenWidth(this);
@@ -361,7 +364,15 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
             playIv.setImageResource(R.drawable.ic_play);
             centerPlayIv.setImageResource(R.drawable.ic_play_white);
             lastPauseLocation = mPlayer.getCurrentPosition();
-            mHandler.sendEmptyMessageDelayed(RELOCATION_PROGRESS, 5000);
+            if (jumpGap==-1) {
+                //用户未设置
+                mHandler.sendEmptyMessageDelayed(RELOCATION_PROGRESS, 5000);
+            }else if (jumpGap==0){
+                //用户不需要这个功能
+            }else {
+                //用户设置了具体值
+                mHandler.sendEmptyMessageDelayed(RELOCATION_PROGRESS, jumpGap);
+            }
         }
     }
 
@@ -449,7 +460,16 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         controlLp.width = finalWidth;
         controlLp.height = finalHeight;
         shelterLp.width = finalWidth;
-        shelterLp.height = DisplayUtil.dip2px(this, 30);
+        if (shelterHeight==-1) {
+            //用户未设置
+            shelterLp.height = DisplayUtil.dip2px(this, 30);
+        }else if (shelterHeight==0){
+            //用户不需要这个功能
+            shelterLp.height = 0;
+        }else {
+            //用户设置了具体值
+            shelterLp.height = DisplayUtil.dip2px(this, shelterHeight);
+        }
         videoSv.setLayoutParams(lp);
         controlRl.setLayoutParams(controlLp);
         shelterDv.setLayoutParams(shelterLp);
