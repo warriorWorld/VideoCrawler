@@ -116,7 +116,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
                 e.printStackTrace();
             }
             baseToast.showToast(path);
-            mMainFragment.addVideo(path, 0);
+            mMainFragment.addVideo(path);
         }
     }
 

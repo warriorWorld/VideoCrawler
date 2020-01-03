@@ -40,7 +40,7 @@ public class MainFragment extends BaseRefreshListFragment {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case UPDATE_LIST:
-                    initRec();
+                    doGetData();
                     break;
             }
         }
@@ -87,12 +87,14 @@ public class MainFragment extends BaseRefreshListFragment {
         startActivityForResult(intent, 1);
     }
 
-    public void addVideo(final String path, final int duration) {
+    public void addVideo(final String path) {
         SingleLoadBarUtil.getInstance().showLoadBar(getActivity());
         new Thread(new Runnable() {
             @Override
             public void run() {
-                db.insertVideoTableTb(getActivity(), path, StringUtil.cutString(path, '/', '.'), duration, 0);
+                String duration=VideoUtil.getRingDuring(path);
+
+                db.insertVideoTableTb(getActivity(), path, StringUtil.cutString(path, '/', '.'), 0, 0);
                 SingleLoadBarUtil.getInstance().dismissLoadBar();
                 mHandler.sendEmptyMessage(UPDATE_LIST);
             }
@@ -151,7 +153,7 @@ public class MainFragment extends BaseRefreshListFragment {
             }
         });
         dialog.show();
-        dialog.setTitle("是否删除该视频?");
+        dialog.setTitle("是否删除该视频(不会删除本地文件)?");
         dialog.setOkBtnText("删除");
         dialog.setCancelBtnText("取消");
     }
