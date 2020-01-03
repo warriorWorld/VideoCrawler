@@ -3,10 +3,17 @@ package com.insightsurfface.videocrawler.db;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.net.Uri;
 
+import com.insightsurface.lib.utils.BitmapUtils;
+import com.insightsurface.lib.utils.ShareObjUtil;
 import com.insightsurfface.videocrawler.bean.VideoBean;
 import com.insightsurfface.videocrawler.bean.WordsBookBean;
 import com.insightsurfface.videocrawler.config.Configure;
+import com.insightsurfface.videocrawler.config.ShareKeys;
+import com.insightsurfface.videocrawler.utils.BitmapUtil;
+import com.insightsurfface.videocrawler.utils.VideoUtil;
 
 import java.util.ArrayList;
 
@@ -24,13 +31,14 @@ public class DbAdapter {
     /**
      * 插入一条书籍信息
      */
-    public void insertVideoTableTb(String path, String videoName, int duration, int watchedTime) {
+    public void insertVideoTableTb(Context context, String path, String videoName, int duration, int watchedTime) {
         if (queryadded(path)) {
             return;
         }
         db.execSQL(
                 "insert into VideoTable (path,title,duration,watched_time) values (?,?,?,?)",
                 new Object[]{path, videoName, duration, watchedTime});
+        ShareObjUtil.saveObject(context, BitmapUtils.bitmapToString(VideoUtil.getVideoThumbnail(context, Uri.parse(path))), queryIdByPath(path) + ShareKeys.VIDEO_THUMBNAIL);
     }
 
     /**
@@ -70,7 +78,7 @@ public class DbAdapter {
      *
      * @return
      */
-    public ArrayList<VideoBean> queryAllVideos() {
+    public ArrayList<VideoBean> queryAllVideos(Context context) {
         ArrayList<VideoBean> resBeans = new ArrayList<VideoBean>();
         Cursor cursor = db
                 .query("VideoTable", null, null, null, null, null, null);
@@ -85,12 +93,14 @@ public class DbAdapter {
                     .getInt(cursor.getColumnIndex("duration"));
             int watchedTime = cursor
                     .getInt(cursor.getColumnIndex("watched_time"));
+            Bitmap bp = BitmapUtil.stringToBitmap((String) ShareObjUtil.getObject(context, id + ShareKeys.VIDEO_THUMBNAIL));
             VideoBean item = new VideoBean();
             item.setId(id);
             item.setPath(path);
             item.setTitle(name);
             item.setDuration(duration);
             item.setWatched_time(watchedTime);
+            item.setThumbnail(bp);
             resBeans.add(item);
         }
         cursor.close();
@@ -167,12 +177,28 @@ public class DbAdapter {
         return res;
     }
 
+    public int queryIdByPath(String path) {
+        int res = 0;
+        Cursor cursor = db.rawQuery(
+                "select id from VideoTable where path=?",
+                new String[]{path});
+        int count = cursor.getCount();
+        if (count > 0) {
+            while (cursor.moveToNext()) {
+                res = cursor.getInt(cursor.getColumnIndex("id"));
+            }
+        }
+        cursor.close();
+        return res;
+    }
+
     /**
      * 删除视频
      */
-    public void deleteVideoByPath(String path) {
-        db.execSQL("delete from VideoTable where path=?",
-                new Object[]{path});
+    public void deleteVideoById(Context context, int id) {
+        db.execSQL("delete from VideoTable where id=?",
+                new Object[]{id});
+        ShareObjUtil.deleteFile(context, id + ShareKeys.VIDEO_THUMBNAIL);
     }
 
     /**

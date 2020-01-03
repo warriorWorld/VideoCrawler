@@ -82,6 +82,7 @@ public class VideoAdapter extends BaseRecyclerAdapter {
                 }
             }
         });
+        ((NormalViewHolder) viewHolder).videoThumbnailIv.setImageBitmap(item.getThumbnail());
         ((NormalViewHolder) viewHolder).videoLl.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {

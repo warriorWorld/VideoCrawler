@@ -108,12 +108,12 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        clip = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         Intent intent = getIntent();
         id = intent.getIntExtra("id", 0);
         url = intent.getStringExtra("url");
         title = intent.getStringExtra("title");
+        super.onCreate(savedInstanceState);
+        clip = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         screenWidth = DisplayUtil.getScreenWidth(this);
         screenHeight = DisplayUtil.getScreenRealHeight(this);
 
@@ -603,7 +603,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         switch (v.getId()) {
             case R.id.full_screen_iv:
                 if (isPortrait()) {
-                    setOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+                    setOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                 } else {
                     setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                 }

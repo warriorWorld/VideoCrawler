@@ -1,13 +1,19 @@
 package com.insightsurfface.videocrawler.business.main;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 
 import com.insightsurface.lib.base.BaseRefreshListFragment;
 import com.insightsurface.lib.listener.OnDialogClickListener;
 import com.insightsurface.lib.listener.OnRecycleItemClickListener;
 import com.insightsurface.lib.listener.OnRecycleItemLongClickListener;
+import com.insightsurface.lib.utils.ShareObjUtil;
+import com.insightsurface.lib.utils.SingleLoadBarUtil;
 import com.insightsurface.lib.widget.bar.TopBar;
 import com.insightsurface.lib.widget.dialog.NormalDialog;
 import com.insightsurfface.videocrawler.R;
@@ -17,6 +23,7 @@ import com.insightsurfface.videocrawler.business.video.TestActivity;
 import com.insightsurfface.videocrawler.business.video.VideoActivity;
 import com.insightsurfface.videocrawler.db.DbAdapter;
 import com.insightsurfface.videocrawler.utils.StringUtil;
+import com.insightsurfface.videocrawler.utils.VideoUtil;
 
 import java.util.ArrayList;
 
@@ -27,6 +34,17 @@ public class MainFragment extends BaseRefreshListFragment {
     private VideoAdapter mAdapter;
     private TopBar mTopBar;
     private DbAdapter db;//数据库
+    private final int UPDATE_LIST = 0;
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case UPDATE_LIST:
+                    initRec();
+                    break;
+            }
+        }
+    };
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,18 +82,25 @@ public class MainFragment extends BaseRefreshListFragment {
         baseToast.showToast("选择视频文件（目前支持3gp,mp4,avi）");
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
 //        intent.setType("text/plain");//设置类型和后缀 txt
-        intent.setType("*/*");//设置类型和后缀  全部文件
+        intent.setType("video/*");//设置类型和后缀  全部文件
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         startActivityForResult(intent, 1);
     }
 
-    public void addVideo(String path, int duration) {
-        db.insertVideoTableTb(path, StringUtil.cutString(path, '/', '.'), duration, 0);
-        doGetData();
+    public void addVideo(final String path, final int duration) {
+        SingleLoadBarUtil.getInstance().showLoadBar(getActivity());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                db.insertVideoTableTb(getActivity(), path, StringUtil.cutString(path, '/', '.'), duration, 0);
+                SingleLoadBarUtil.getInstance().dismissLoadBar();
+                mHandler.sendEmptyMessage(UPDATE_LIST);
+            }
+        }).start();
     }
 
-    public void deleteBooks(String path) {
-        db.deleteVideoByPath(path);
+    public void deleteVideo(Context context, int id) {
+        db.deleteVideoById(context, id);
         doGetData();
     }
 
@@ -93,7 +118,7 @@ public class MainFragment extends BaseRefreshListFragment {
 
     @Override
     protected void doGetData() {
-        videoList = db.queryAllVideos();
+        videoList = db.queryAllVideos(getActivity());
 
         initRec();
     }
@@ -112,11 +137,12 @@ public class MainFragment extends BaseRefreshListFragment {
         return null;
     }
 
-    private void showDeleteDialog(final String id) {
+    private void showDeleteDialog(final int id) {
         NormalDialog dialog = new NormalDialog(getActivity());
         dialog.setOnDialogClickListener(new OnDialogClickListener() {
             @Override
             public void onOkClick() {
+                deleteVideo(getActivity(), id);
             }
 
             @Override
@@ -145,7 +171,7 @@ public class MainFragment extends BaseRefreshListFragment {
                 mAdapter.setOnRecycleItemLongClickListener(new OnRecycleItemLongClickListener() {
                     @Override
                     public void onItemLongClick(int position) {
-                        showDeleteDialog(videoList.get(position).getPath());
+                        showDeleteDialog(videoList.get(position).getId());
                     }
                 });
                 refreshRcv.setAdapter(mAdapter);

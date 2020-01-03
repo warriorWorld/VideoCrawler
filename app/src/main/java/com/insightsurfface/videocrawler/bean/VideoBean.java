@@ -1,5 +1,7 @@
 package com.insightsurfface.videocrawler.bean;
 
+import android.graphics.Bitmap;
+
 import com.insightsurface.lib.bean.BaseBean;
 
 public class VideoBean extends BaseBean {
@@ -8,6 +10,7 @@ public class VideoBean extends BaseBean {
     private String path;
     private int duration;
     private int watched_time;
+    private Bitmap thumbnail;
 
     public String getTitle() {
         return title;
@@ -47,5 +50,13 @@ public class VideoBean extends BaseBean {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public Bitmap getThumbnail() {
+        return thumbnail;
+    }
+
+    public void setThumbnail(Bitmap thumbnail) {
+        this.thumbnail = thumbnail;
     }
 }
