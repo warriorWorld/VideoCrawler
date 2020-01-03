@@ -159,7 +159,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
             mPlayer.setOnSubtitleDataListener(new MediaPlayer.OnSubtitleDataListener() {
                 @Override
                 public void onSubtitleData(@NonNull MediaPlayer mp, @NonNull SubtitleData data) {
-                    Logger.d(data.toString());
+                    Logger.d("onSubtitleData"+data.toString());
                 }
             });
         }
@@ -354,26 +354,28 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
+        Logger.d("surfaceChanged");
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-
+        Logger.d("surfaceDestroyed");
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-
+        Logger.d("onCompletion");
     }
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
+        Logger.d("onError");
         return false;
     }
 
     @Override
     public boolean onInfo(MediaPlayer mp, int what, int extra) {
+        Logger.d("onInfo");
         return false;
     }
 
@@ -388,7 +390,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
 
     @Override
     public void onSeekComplete(MediaPlayer mp) {
-
+        Logger.d("onSeekComplete");
     }
 
     @Override
