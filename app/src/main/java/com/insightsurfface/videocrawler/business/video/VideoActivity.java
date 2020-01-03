@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.ClipboardManager;
+import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -279,6 +280,12 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private void saveState() {
         SharedPreferencesUtils.setSharedPreferencesData(this, id + "progress",
                 mPlayer.getCurrentPosition());
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        baseToast.showToast("code:" + keyCode);
+        return super.onKeyDown(keyCode, event);
     }
 
     private void recoverState() {
@@ -630,6 +637,11 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                     hideControl();
                 } else {
                     showControl();
+                }
+                if (mPlayer.isPlaying()) {
+                    playPause();
+                } else {
+                    playStart();
                 }
                 break;
             case R.id.translate_iv:
