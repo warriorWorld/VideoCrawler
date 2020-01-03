@@ -159,7 +159,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
             mPlayer.setOnSubtitleDataListener(new MediaPlayer.OnSubtitleDataListener() {
                 @Override
                 public void onSubtitleData(@NonNull MediaPlayer mp, @NonNull SubtitleData data) {
-                    Logger.d("onSubtitleData"+data.toString());
+                    Logger.d("onSubtitleData" + data.toString());
                 }
             });
         }
@@ -196,7 +196,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         controlRl.setVisibility(View.GONE);
         shelterDv = findViewById(R.id.shelter_dv);
         shelterDv.setSavePosition(true);
-        shelterDv.setLastPosKey("POS_KEY" + id);
+        shelterDv.setLastPosKey("POS_KEY");
         shelterDv.setOnDragListener(new ShelterView.OnDragListener() {
             @Override
             public void dragStart() {

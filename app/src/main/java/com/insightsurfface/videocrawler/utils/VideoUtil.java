@@ -19,7 +19,7 @@ public class VideoUtil {
             int seconds = Integer.valueOf(time) / 1000;
             int timeS = Integer.valueOf(time) / 10;
             for (int i = 1; i <= 10; i++) {
-                bitmap = retriever.getFrameAtTime(i * timeS * 1000, MediaMetadataRetriever.OPTION_CLOSEST);
+                bitmap = retriever.getFrameAtTime(i * timeS * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
             }
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
