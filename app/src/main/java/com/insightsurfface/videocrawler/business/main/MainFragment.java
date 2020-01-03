@@ -22,9 +22,14 @@ import com.insightsurfface.videocrawler.bean.VideoBean;
 import com.insightsurfface.videocrawler.business.video.TestActivity;
 import com.insightsurfface.videocrawler.business.video.VideoActivity;
 import com.insightsurfface.videocrawler.db.DbAdapter;
+import com.insightsurfface.videocrawler.listener.OnListDialogListener;
+import com.insightsurfface.videocrawler.utils.FileUtils;
 import com.insightsurfface.videocrawler.utils.StringUtil;
 import com.insightsurfface.videocrawler.utils.VideoUtil;
+import com.insightsurfface.videocrawler.widget.dialog.ListDialog;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import androidx.annotation.Nullable;
@@ -45,6 +50,7 @@ public class MainFragment extends BaseRefreshListFragment {
             }
         }
     };
+    private final String[] DELETE_LIST = {"从列表中删除", "彻底删除"};
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -92,7 +98,7 @@ public class MainFragment extends BaseRefreshListFragment {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                int duration=VideoUtil.getVideoDuration(getActivity(),Uri.parse(path));
+                int duration = VideoUtil.getVideoDuration(getActivity(), Uri.parse(path));
 
                 db.insertVideoTableTb(getActivity(), path, StringUtil.cutString(path, '/', '.'), duration, 0);
                 SingleLoadBarUtil.getInstance().dismissLoadBar();
@@ -139,11 +145,16 @@ public class MainFragment extends BaseRefreshListFragment {
         return null;
     }
 
-    private void showDeleteDialog(final int id) {
+    private void showDeleteDialog(final int id,final String path) {
         NormalDialog dialog = new NormalDialog(getActivity());
         dialog.setOnDialogClickListener(new OnDialogClickListener() {
             @Override
             public void onOkClick() {
+                try {
+                    FileUtils.deleteFile(new File(path));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 deleteVideo(getActivity(), id);
             }
 
@@ -153,9 +164,37 @@ public class MainFragment extends BaseRefreshListFragment {
             }
         });
         dialog.show();
-        dialog.setTitle("是否删除该视频(不会删除本地文件)?");
+        dialog.setTitle("是否删除该视频(本地视频也将被删除)?");
         dialog.setOkBtnText("删除");
         dialog.setCancelBtnText("取消");
+    }
+
+    private void showDeleteSelectorDialog(final int deletePos) {
+        ListDialog listDialog = new ListDialog(getActivity());
+        listDialog.setOnListDialogListener(new OnListDialogListener() {
+            @Override
+            public void onItemClick(String selectedRes, String selectedCodeRes) {
+            }
+
+            @Override
+            public void onItemClick(String selectedRes) {
+
+            }
+
+            @Override
+            public void onItemClick(int position) {
+                switch (position) {
+                    case 0:
+                        deleteVideo(getActivity(), videoList.get(deletePos).getId());
+                        break;
+                    case 1:
+                        showDeleteDialog(videoList.get(position).getId(),videoList.get(position).getPath());
+                        break;
+                }
+            }
+        });
+        listDialog.show();
+        listDialog.setOptionsList(DELETE_LIST);
     }
 
     @Override
@@ -173,7 +212,7 @@ public class MainFragment extends BaseRefreshListFragment {
                 mAdapter.setOnRecycleItemLongClickListener(new OnRecycleItemLongClickListener() {
                     @Override
                     public void onItemLongClick(int position) {
-                        showDeleteDialog(videoList.get(position).getId());
+                        showDeleteSelectorDialog(position);
                     }
                 });
                 refreshRcv.setAdapter(mAdapter);

@@ -221,7 +221,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="60dp"
-            android:text="遮挡设置"
+            android:text="设置遮挡高度"
             android:textColor="@color/main_text_color"
             android:textSize="17sp" />
 
@@ -233,7 +233,40 @@
             android:layout_marginRight="20dp"
             android:src="@drawable/forward" />
     </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/jump_frame_rl"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="12dp"
+        android:background="@drawable/rect_white_c5"
+        android:elevation="1dp">
 
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:src="@drawable/ic_tv" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="60dp"
+            android:text="设置跳帧间隔"
+            android:textColor="@color/main_text_color"
+            android:textSize="17sp" />
+
+        <ImageView
+            android:layout_width="6dp"
+            android:layout_height="13dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:src="@drawable/forward" />
+    </RelativeLayout>
     <TextView
         android:id="@+id/qq_tv"
         android:layout_marginTop="12dp"
