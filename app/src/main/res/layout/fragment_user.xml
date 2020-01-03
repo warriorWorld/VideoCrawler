@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="@color/divide"
-              android:orientation="vertical">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/divide"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/user_bg_rl"
@@ -18,7 +18,7 @@
             android:layout_height="60dp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="30dp"
-            android:src="@drawable/ic_tv_red"/>
+            android:src="@drawable/ic_tv_red" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -34,23 +34,68 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
-                android:text="--"
+                android:text="@string/app_name"
                 android:textColor="@color/main_text_color"
-                android:textSize="21sp"/>
+                android:textSize="21sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:includeFontPadding="false"
-                android:text="欢迎使用XXXAPP"
+                android:text="欢迎使用"
                 android:textColor="@color/main_text_color"
-                android:textSize="15sp"/>
+                android:textSize="15sp" />
         </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="20dp">
+
+            <TextView
+                android:id="@+id/day_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="23dp"
+                android:includeFontPadding="false"
+                android:text="01"
+                android:textColor="@color/main_text_color"
+                android:textSize="50sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/month_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="28dp"
+                android:layout_toRightOf="@+id/day_tv"
+                android:includeFontPadding="false"
+                android:text="1月"
+                android:textColor="@color/main_text_color"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/day_of_week_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/month_tv"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_toRightOf="@+id/day_tv"
+                android:text="星期一"
+                android:textColor="@color/main_text_color"
+                android:textSize="12sp" />
+        </RelativeLayout>
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/folder_rl"
+        android:id="@+id/words_rl"
         android:layout_width="match_parent"
         android:layout_height="54dp"
         android:layout_marginLeft="12dp"
@@ -64,16 +109,16 @@
             android:layout_height="24dp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="20dp"
-           />
+            android:src="@drawable/ic_book" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="60dp"
-            android:text="文件夹"
+            android:text="生词本"
             android:textColor="@color/main_text_color"
-            android:textSize="17sp"/>
+            android:textSize="17sp" />
 
         <ImageView
             android:layout_width="6dp"
@@ -81,11 +126,11 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="20dp"
-            android:src="@drawable/forward"/>
+            android:src="@drawable/forward" />
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/key_rl"
+        android:id="@+id/share_rl"
         android:layout_width="match_parent"
         android:layout_height="54dp"
         android:layout_marginLeft="12dp"
@@ -98,16 +143,17 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="20dp"/>
+            android:layout_marginLeft="20dp"
+            android:src="@drawable/ic_share" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="60dp"
-            android:text="设置加密key"
+            android:text="分享App"
             android:textColor="@color/main_text_color"
-            android:textSize="17sp"/>
+            android:textSize="17sp" />
 
         <ImageView
             android:layout_width="6dp"
@@ -115,11 +161,11 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="20dp"
-            android:src="@drawable/forward"/>
+            android:src="@drawable/forward" />
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/feedback_rl"
+        android:id="@+id/keyboard_rl"
         android:layout_width="match_parent"
         android:layout_height="54dp"
         android:layout_marginLeft="12dp"
@@ -132,16 +178,17 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="20dp"/>
+            android:layout_marginLeft="20dp"
+            android:src="@drawable/ic_keyboard" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="60dp"
-            android:text="意见反馈"
+            android:text="键盘设置"
             android:textColor="@color/main_text_color"
-            android:textSize="17sp"/>
+            android:textSize="17sp" />
 
         <ImageView
             android:layout_width="6dp"
@@ -149,20 +196,51 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="20dp"
-            android:src="@drawable/forward"/>
+            android:src="@drawable/forward" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/shelter_rl"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="12dp"
+        android:background="@drawable/rect_white_c5"
+        android:elevation="1dp">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:src="@drawable/ic_tv_color" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="60dp"
+            android:text="遮挡设置"
+            android:textColor="@color/main_text_color"
+            android:textSize="17sp" />
+
+        <ImageView
+            android:layout_width="6dp"
+            android:layout_height="13dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:src="@drawable/forward" />
     </RelativeLayout>
 
     <TextView
-        android:id="@+id/logout_tv"
-        android:layout_width="match_parent"
-        android:layout_height="54dp"
-        android:layout_marginLeft="12dp"
+        android:id="@+id/qq_tv"
         android:layout_marginTop="12dp"
-        android:layout_marginRight="12dp"
-        android:background="@drawable/rect_white_c5"
-        android:elevation="1dp"
-        android:gravity="center"
-        android:text="退出账号"
-        android:textColor="@color/main_text_color"
-        android:textSize="15sp"/>
+        android:layout_marginLeft="12dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="获取最新版App，请加qq群：782685214。"
+        android:textColor="@color/main_text_color_gray"
+        android:textSize="15sp"></TextView>
 </LinearLayout>

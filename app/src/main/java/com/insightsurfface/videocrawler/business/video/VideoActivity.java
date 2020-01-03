@@ -284,7 +284,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        baseToast.showToast("code:" + keyCode);
+//        baseToast.showToast("code:" + keyCode);
         return super.onKeyDown(keyCode, event);
     }
 
@@ -484,7 +484,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         controlRl.setVisibility(View.VISIBLE);
         mHandler.removeMessages(HIDE_CONTROL);
         mHandler.sendEmptyMessage(UPDATE_TIME);
-        mHandler.sendEmptyMessageDelayed(HIDE_CONTROL, 10000);
+        mHandler.sendEmptyMessageDelayed(HIDE_CONTROL, 30000);
         shelterDv.setVisibility(View.GONE);
     }
 
