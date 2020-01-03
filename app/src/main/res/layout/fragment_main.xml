@@ -10,7 +10,7 @@
         android:layout_height="50dp"
         android:background="@color/white"
         app:left_text=""
-        app:right_background="@drawable/ic_user"
+        app:right_background="@drawable/ic_add"
         app:right_text=""
         app:title_text="本地视频"
         app:title_textColor="@color/main_text_color"></com.insightsurface.lib.widget.bar.TopBar>

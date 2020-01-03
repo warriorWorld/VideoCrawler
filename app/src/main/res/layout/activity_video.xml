@@ -17,11 +17,12 @@
         android:layout_height="wrap_content"
         android:visibility="visible">
 
-        <View
-            android:id="@+id/view_holder"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_centerInParent="true"></View>
+        <ImageView
+            android:id="@+id/center_play_iv"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_pause_white"></ImageView>
 
         <View
             android:id="@+id/divide_v"
@@ -48,18 +49,18 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_centerVertical="true"
-            android:layout_marginRight="30dp"
-            android:layout_toLeftOf="@+id/view_holder"
-            android:src="@drawable/ic_tv_red"></ImageView>
+            android:layout_marginRight="40dp"
+            android:layout_toLeftOf="@+id/center_play_iv"
+            android:src="@drawable/ic_fast_backward"></ImageView>
 
         <ImageView
             android:id="@+id/forward_iv"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="30dp"
-            android:layout_toRightOf="@+id/view_holder"
-            android:src="@drawable/ic_tv_red"></ImageView>
+            android:layout_marginLeft="40dp"
+            android:layout_toRightOf="@+id/center_play_iv"
+            android:src="@drawable/ic_fast_forward"></ImageView>
 
         <RelativeLayout
             android:layout_width="match_parent"

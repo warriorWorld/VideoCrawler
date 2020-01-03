@@ -104,7 +104,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private ImageView translateIv;
     private SensorManager sManager;
     private Sensor mSensorAccelerometer;
-    private ImageView backIv,forwardIv;
+    private ImageView backIv, forwardIv, centerPlayIv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -193,6 +193,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         videoSv = findViewById(R.id.video_sv);
         chooseUriBtn = findViewById(R.id.choose_uri_btn);
         controlRl = (RelativeLayout) findViewById(R.id.control_rl);
+        controlRl.setVisibility(View.GONE);
         shelterDv = findViewById(R.id.shelter_dv);
         shelterDv.setSavePosition(true);
         shelterDv.setLastPosKey("POS_KEY" + id);
@@ -246,9 +247,11 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         divideV.setLayoutParams(params);
         playIv = findViewById(R.id.play_iv);
         translateIv = findViewById(R.id.translate_iv);
-        backIv=findViewById(R.id.back_iv);
-        forwardIv=findViewById(R.id.forward_iv);
+        backIv = findViewById(R.id.back_iv);
+        forwardIv = findViewById(R.id.forward_iv);
+        centerPlayIv = findViewById(R.id.center_play_iv);
 
+        centerPlayIv.setOnClickListener(this);
         backIv.setOnClickListener(this);
         forwardIv.setOnClickListener(this);
         translateIv.setOnClickListener(this);
@@ -329,12 +332,14 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         mPlayer.setDisplay(mSurfaceHolder);
         mPlayer.start();
         playIv.setImageResource(R.drawable.ic_pause);
+        centerPlayIv.setImageResource(R.drawable.ic_pause_white);
     }
 
     private void playPause() {
         if (mPlayer != null && mPlayer.isPlaying()) {
             mPlayer.pause();
             playIv.setImageResource(R.drawable.ic_play);
+            centerPlayIv.setImageResource(R.drawable.ic_play_white);
         }
     }
 
@@ -470,7 +475,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         controlRl.setVisibility(View.VISIBLE);
         mHandler.removeMessages(HIDE_CONTROL);
         mHandler.sendEmptyMessage(UPDATE_TIME);
-        mHandler.sendEmptyMessageDelayed(HIDE_CONTROL, 5000);
+        mHandler.sendEmptyMessageDelayed(HIDE_CONTROL, 10000);
         shelterDv.setVisibility(View.GONE);
     }
 
@@ -611,6 +616,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                 }
                 break;
             case R.id.shelter_dv:
+            case R.id.center_play_iv:
                 if (mPlayer.isPlaying()) {
                     playPause();
                 } else {
@@ -631,14 +637,14 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                 showSearchDialog();
                 break;
             case R.id.back_iv:
-                mPlayer.seekTo(mPlayer.getCurrentPosition()-5000);
-                if (!mPlayer.isPlaying()){
+                mPlayer.seekTo(mPlayer.getCurrentPosition() - 5000);
+                if (!mPlayer.isPlaying()) {
                     playPause();
                 }
                 break;
             case R.id.forward_iv:
-                mPlayer.seekTo(mPlayer.getCurrentPosition()+5000);
-                if (!mPlayer.isPlaying()){
+                mPlayer.seekTo(mPlayer.getCurrentPosition() + 5000);
+                if (!mPlayer.isPlaying()) {
                     playPause();
                 }
                 break;
