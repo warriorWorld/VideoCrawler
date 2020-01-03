@@ -15,7 +15,13 @@
         android:id="@+id/control_rl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone">
+        android:visibility="visible">
+
+        <View
+            android:id="@+id/view_holder"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_centerInParent="true"></View>
 
         <View
             android:id="@+id/divide_v"
@@ -36,6 +42,24 @@
             android:text="title"
             android:textColor="@color/white"
             android:textSize="15sp"></TextView>
+
+        <ImageView
+            android:id="@+id/back_iv"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="30dp"
+            android:layout_toLeftOf="@+id/view_holder"
+            android:src="@drawable/ic_tv_red"></ImageView>
+
+        <ImageView
+            android:id="@+id/forward_iv"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="30dp"
+            android:layout_toRightOf="@+id/view_holder"
+            android:src="@drawable/ic_tv_red"></ImageView>
 
         <RelativeLayout
             android:layout_width="match_parent"

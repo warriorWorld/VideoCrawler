@@ -104,6 +104,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private ImageView translateIv;
     private SensorManager sManager;
     private Sensor mSensorAccelerometer;
+    private ImageView backIv,forwardIv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -245,7 +246,11 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         divideV.setLayoutParams(params);
         playIv = findViewById(R.id.play_iv);
         translateIv = findViewById(R.id.translate_iv);
+        backIv=findViewById(R.id.back_iv);
+        forwardIv=findViewById(R.id.forward_iv);
 
+        backIv.setOnClickListener(this);
+        forwardIv.setOnClickListener(this);
         translateIv.setOnClickListener(this);
         playIv.setOnClickListener(this);
         videoSv.setOnClickListener(this);
@@ -624,6 +629,18 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
 //                Bitmap bgBitmap = ScreenShot.takeScreenShot(this, 0,screenHeight,top, screenWidth-top);
 //                showImgLandscapeKeyBoardDialog(bgBitmap);
                 showSearchDialog();
+                break;
+            case R.id.back_iv:
+                mPlayer.seekTo(mPlayer.getCurrentPosition()-5000);
+                if (!mPlayer.isPlaying()){
+                    playPause();
+                }
+                break;
+            case R.id.forward_iv:
+                mPlayer.seekTo(mPlayer.getCurrentPosition()+5000);
+                if (!mPlayer.isPlaying()){
+                    playPause();
+                }
                 break;
         }
     }
