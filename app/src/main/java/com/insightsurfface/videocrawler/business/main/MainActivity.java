@@ -115,7 +115,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
-            baseToast.showToast(path);
+//            baseToast.showToast(path);
             mMainFragment.addVideo(path);
         }
     }
