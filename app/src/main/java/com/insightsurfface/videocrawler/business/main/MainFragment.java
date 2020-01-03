@@ -13,6 +13,7 @@ import com.insightsurface.lib.widget.dialog.NormalDialog;
 import com.insightsurfface.videocrawler.R;
 import com.insightsurfface.videocrawler.adapter.VideoAdapter;
 import com.insightsurfface.videocrawler.bean.VideoBean;
+import com.insightsurfface.videocrawler.business.video.TestActivity;
 import com.insightsurfface.videocrawler.business.video.VideoActivity;
 import com.insightsurfface.videocrawler.db.DbAdapter;
 import com.insightsurfface.videocrawler.utils.StringUtil;
@@ -50,7 +51,8 @@ public class MainFragment extends BaseRefreshListFragment {
 
             @Override
             public void onTitleClick() {
-
+                Intent intent = new Intent(getActivity(), TestActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -137,7 +139,7 @@ public class MainFragment extends BaseRefreshListFragment {
                 mAdapter.setOnRecycleItemClickListener(new OnRecycleItemClickListener() {
                     @Override
                     public void onItemClick(int position) {
-                        VideoActivity.startActivity(getActivity(), videoList.get(position).getId(),videoList.get(position).getPath(),videoList.get(position).getTitle());
+                        VideoActivity.startActivity(getActivity(), videoList.get(position).getId(), videoList.get(position).getPath(), videoList.get(position).getTitle());
                     }
                 });
                 mAdapter.setOnRecycleItemLongClickListener(new OnRecycleItemLongClickListener() {
