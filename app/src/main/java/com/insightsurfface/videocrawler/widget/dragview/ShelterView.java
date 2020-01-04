@@ -24,7 +24,7 @@ public class ShelterView extends ImageView {
     private float downX;
     private float downY;
     private long downTime;
-    private int lastMotion, lastLeft, lastRight, lastTop, lastBottom, screenWidth, screenHeight;
+    private int lastMotion, lastLeft, lastTop, screenWidth, screenHeight;
     private boolean edged = false;
     private int marginBottom;
     private int clickThreshold = 1;
@@ -67,13 +67,11 @@ public class ShelterView extends ImageView {
         super.onLayout(changed, left, top, right, bottom);
         if (changed) {
             if ((lastMotion == MotionEvent.ACTION_UP || lastMotion == MotionEvent.ACTION_CANCEL) && edged) {
-                this.layout(lastLeft, lastTop, lastRight, lastBottom);
+                this.layout(lastLeft, lastTop, lastLeft+getWidth(), lastTop+getHeight());
                 return;
             }
             lastLeft = left;
             lastTop = top;
-            lastRight = right;
-            lastBottom = bottom;
         }
 //        Logger.d(TAG+":"+changed+","+left+","+top+","+right+","+bottom);
     }
@@ -86,7 +84,7 @@ public class ShelterView extends ImageView {
 
     private void savePosition() {
         if (savePosition) {
-            String save = 0 + ";" + (int) lastTop + ";" + screenWidth + ";" + (int) lastBottom;
+            String save = 0 + ";" + (int) lastTop + ";";
             SharedPreferencesUtils.setSharedPreferencesData(mContext, lastPosKey, save);
         }
     }
@@ -102,7 +100,7 @@ public class ShelterView extends ImageView {
         }
 
         try {
-            this.layout(Integer.valueOf(ss[0]), Integer.valueOf(ss[1]), Integer.valueOf(ss[2]), Integer.valueOf(ss[3]));
+            this.layout(Integer.valueOf(ss[0]), Integer.valueOf(ss[1]), Integer.valueOf(ss[0])+getWidth(), Integer.valueOf(ss[1])+getHeight());
             //阻止onlayout后被重置位置
             lastMotion = MotionEvent.ACTION_UP;
             edged = true;
