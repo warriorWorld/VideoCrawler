@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.ClipboardManager;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -128,6 +129,9 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         id = intent.getIntExtra("id", 0);
         url = intent.getStringExtra("url");
         title = intent.getStringExtra("title");
+        if (TextUtils.isEmpty(url)){
+            url=intent.getDataString();
+        }
         jumpGap = SharedPreferencesUtils.getIntSharedPreferencesData(this, ShareKeys.JUMP_FRAME_GAP, -1);
         shelterHeight = SharedPreferencesUtils.getIntSharedPreferencesData(this, ShareKeys.SHELTER_HEIGHT, -1);
         super.onCreate(savedInstanceState);

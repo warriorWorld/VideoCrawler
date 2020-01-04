@@ -13,18 +13,24 @@
         android:roundIcon="@drawable/ic_tv_red"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".business.main.MainActivity">
+        <activity android:name=".business.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
         <activity
             android:name=".business.video.VideoActivity"
             android:configChanges="orientation|screenSize"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"></action>
+                <category android:name="android.intent.category.DEFAULT"></category>
+                <data android:mimeType="video/*"></data>
+            </intent-filter>
+        </activity>
         <activity
             android:name=".business.video.TestActivity"
             android:configChanges="orientation|screenSize"
