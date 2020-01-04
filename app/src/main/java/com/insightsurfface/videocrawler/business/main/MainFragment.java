@@ -188,7 +188,7 @@ public class MainFragment extends BaseRefreshListFragment {
                         deleteVideo(getActivity(), videoList.get(deletePos).getId());
                         break;
                     case 1:
-                        showDeleteDialog(videoList.get(position).getId(),videoList.get(position).getPath());
+                        showDeleteDialog(videoList.get(deletePos).getId(),videoList.get(deletePos).getPath());
                         break;
                 }
             }
