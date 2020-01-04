@@ -133,7 +133,6 @@
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:text="选择视频文件"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"></Button>

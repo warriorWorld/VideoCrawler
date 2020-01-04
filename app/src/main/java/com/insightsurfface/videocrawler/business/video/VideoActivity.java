@@ -481,13 +481,11 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
 //                baseTopBar.setVisibility(View.VISIBLE);
                 titleTv.setVisibility(View.GONE);
                 shelterDv.setVisibility(View.GONE);
-                chooseUriBtn.setVisibility(View.VISIBLE);
                 resizeSurfaceView(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                 fullScreenIv.setImageResource(R.drawable.ic_full_screen1);
             } else {
 //                baseTopBar.setVisibility(View.GONE);
                 titleTv.setVisibility(View.VISIBLE);
-                chooseUriBtn.setVisibility(View.GONE);
                 shelterDv.toLastPosition();
                 resizeSurfaceView(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                 fullScreenIv.setImageResource(R.drawable.ic_full_screen_exit1);
@@ -641,6 +639,9 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.choose_uri_btn:
+
+                break;
             case R.id.full_screen_iv:
                 if (isPortrait()) {
                     setOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
