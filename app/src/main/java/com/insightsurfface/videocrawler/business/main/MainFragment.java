@@ -22,6 +22,7 @@ import com.insightsurfface.videocrawler.bean.VideoBean;
 import com.insightsurfface.videocrawler.business.video.TestActivity;
 import com.insightsurfface.videocrawler.business.video.VideoActivity;
 import com.insightsurfface.videocrawler.db.DbAdapter;
+import com.insightsurfface.videocrawler.listener.OnEmptyBtnClick;
 import com.insightsurfface.videocrawler.listener.OnListDialogListener;
 import com.insightsurfface.videocrawler.utils.FileUtils;
 import com.insightsurfface.videocrawler.utils.StringUtil;
@@ -213,6 +214,12 @@ public class MainFragment extends BaseRefreshListFragment {
                     @Override
                     public void onItemLongClick(int position) {
                         showDeleteSelectorDialog(position);
+                    }
+                });
+                mAdapter.setOnEmptyBtnClick(new OnEmptyBtnClick() {
+                    @Override
+                    public void onClick() {
+                        showFileChooser();
                     }
                 });
                 refreshRcv.setAdapter(mAdapter);

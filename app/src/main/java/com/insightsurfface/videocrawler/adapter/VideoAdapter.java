@@ -13,6 +13,7 @@ import com.insightsurface.lib.listener.OnRecycleItemClickListener;
 import com.insightsurface.lib.listener.OnRecycleItemLongClickListener;
 import com.insightsurfface.videocrawler.R;
 import com.insightsurfface.videocrawler.bean.VideoBean;
+import com.insightsurfface.videocrawler.listener.OnEmptyBtnClick;
 import com.insightsurfface.videocrawler.utils.StringUtil;
 
 import java.text.SimpleDateFormat;
@@ -29,6 +30,7 @@ public class VideoAdapter extends BaseRecyclerAdapter {
     private OnRecycleItemClickListener onRecycleItemClickListener;
     private OnRecycleItemLongClickListener mOnRecycleItemLongClickListener;
     private SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日 HH时mm分ss秒");
+    private OnEmptyBtnClick mOnEmptyBtnClick;
 
     public VideoAdapter(Context context) {
         super(context);
@@ -49,6 +51,9 @@ public class VideoAdapter extends BaseRecyclerAdapter {
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (null != mOnEmptyBtnClick) {
+                    mOnEmptyBtnClick.onClick();
+                }
             }
         };
     }
@@ -111,16 +116,20 @@ public class VideoAdapter extends BaseRecyclerAdapter {
         mOnRecycleItemLongClickListener = onRecycleItemLongClickListener;
     }
 
+    public void setOnEmptyBtnClick(OnEmptyBtnClick onEmptyBtnClick) {
+        mOnEmptyBtnClick = onEmptyBtnClick;
+    }
+
     //自定义的ViewHolder，持有每个Item的的所有界面元素
     public static class NormalViewHolder extends RecyclerView.ViewHolder {
-        public RelativeLayout videoLl;
+        public View videoLl;
         public ImageView videoThumbnailIv;
         public TextView durationTv;
         public TextView titleTv;
 
         public NormalViewHolder(View view) {
             super(view);
-            videoLl = (RelativeLayout) view.findViewById(R.id.video_ll);
+            videoLl = (View) view.findViewById(R.id.video_ll);
             videoThumbnailIv = (ImageView) view.findViewById(R.id.video_thumbnail_iv);
             durationTv = (TextView) view.findViewById(R.id.duration_tv);
             titleTv = (TextView) view.findViewById(R.id.title_tv);
