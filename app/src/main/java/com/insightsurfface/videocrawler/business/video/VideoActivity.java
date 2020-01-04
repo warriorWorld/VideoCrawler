@@ -51,6 +51,8 @@ import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 import java.util.HashMap;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.Group;
 
 public class VideoActivity extends BaseActivity implements SurfaceHolder.Callback,
         MediaPlayer.OnCompletionListener,
@@ -70,7 +72,6 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private SurfaceHolder mSurfaceHolder;
     private int videoWidth = 0, videoHeight = 0;
     private int screenWidth = 0, screenHeight = 0;
-    private RelativeLayout controlRl;
     private TextView titleTv;
     private DiscreteSeekBar progressSb;
     private TextView timeTv;
@@ -119,6 +120,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private Sensor mSensorAccelerometer;
     private ImageView backIv, forwardIv, centerPlayIv;
     private int jumpGap, shelterHeight;
+    private Group controlGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -208,8 +210,8 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         super.initUI();
         videoSv = findViewById(R.id.video_sv);
         chooseUriBtn = findViewById(R.id.choose_uri_btn);
-        controlRl = (RelativeLayout) findViewById(R.id.control_rl);
-        controlRl.setVisibility(View.GONE);
+        controlGroup=findViewById(R.id.control_group);
+        controlGroup.setVisibility(View.GONE);
         shelterDv = findViewById(R.id.shelter_dv);
         shelterDv.setSavePosition(true);
         shelterDv.setLastPosKey("POS_KEY");
@@ -259,7 +261,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         if (resourceId > 0) {
             height = getResources().getDimensionPixelSize(resourceId);
         }
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, height);
+        ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, height);
         divideV.setLayoutParams(params);
         playIv = findViewById(R.id.play_iv);
         translateIv = findViewById(R.id.translate_iv);
@@ -440,7 +442,6 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
 
     private void resizeSurfaceView(int orientation) {
         ViewGroup.LayoutParams lp = videoSv.getLayoutParams();
-        ViewGroup.LayoutParams controlLp = controlRl.getLayoutParams();
         ViewGroup.LayoutParams shelterLp = shelterDv.getLayoutParams();
         int finalWidth = 0, finalHeight = 0;
         switch (orientation) {
@@ -457,8 +458,6 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         }
         lp.width = finalWidth;
         lp.height = finalHeight;
-        controlLp.width = finalWidth;
-        controlLp.height = finalHeight;
         shelterLp.width = finalWidth;
         if (shelterHeight == -1) {
             //用户未设置
@@ -471,7 +470,6 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
             shelterLp.height = DisplayUtil.dip2px(this, shelterHeight);
         }
         videoSv.setLayoutParams(lp);
-        controlRl.setLayoutParams(controlLp);
         shelterDv.setLayoutParams(shelterLp);
         mSurfaceHolder.setFixedSize(finalWidth, finalHeight);
     }
@@ -516,7 +514,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     }
 
     private void showControl() {
-        controlRl.setVisibility(View.VISIBLE);
+        controlGroup.setVisibility(View.VISIBLE);
         mHandler.removeMessages(HIDE_CONTROL);
         mHandler.sendEmptyMessage(UPDATE_TIME);
         mHandler.sendEmptyMessageDelayed(HIDE_CONTROL, 30000);
@@ -528,7 +526,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
             return;
         }
         mHandler.removeMessages(UPDATE_TIME);
-        controlRl.setVisibility(View.GONE);
+        controlGroup.setVisibility(View.GONE);
         if (!isPortrait()) {
             shelterDv.setVisibility(View.VISIBLE);
         }
@@ -668,7 +666,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                 }
                 break;
             case R.id.video_sv:
-                if (controlRl.isShown()) {
+                if (controlGroup.isShown()) {
                     hideControl();
                 } else {
                     showControl();

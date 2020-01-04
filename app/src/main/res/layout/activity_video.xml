@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,134 +7,156 @@
 
     <SurfaceView
         android:id="@+id/video_sv"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"></SurfaceView>
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"></SurfaceView>
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/control_group"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="center_play_iv,divide_v,forward_iv,back_iv,video_title_tv,bottom_control_rl"></androidx.constraintlayout.widget.Group>
+
+    <ImageView
+        android:id="@+id/center_play_iv"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/ic_pause_white"
+        app:layout_constraintBottom_toBottomOf="@+id/video_sv"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/video_sv"></ImageView>
+
+    <View
+        android:id="@+id/divide_v"
+        android:layout_width="0dp"
+        android:layout_height="1px"
+        android:background="@color/control_bg"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/video_sv"></View>
+
+    <TextView
+        android:id="@+id/video_title_tv"
+        android:layout_width="0dp"
+        android:layout_height="20dp"
+        android:background="@color/control_bg"
+        android:ellipsize="marquee"
+        android:gravity="center_vertical"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:singleLine="true"
+        android:text="title"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/divide_v"></TextView>
+
+    <ImageView
+        android:id="@+id/back_iv"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginRight="40dp"
+        android:src="@drawable/ic_fast_backward"
+        app:layout_constraintBottom_toBottomOf="@+id/video_sv"
+        app:layout_constraintRight_toLeftOf="@+id/center_play_iv"
+        app:layout_constraintTop_toTopOf="@+id/video_sv"></ImageView>
+
+    <ImageView
+        android:id="@+id/forward_iv"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="40dp"
+        android:src="@drawable/ic_fast_forward"
+        app:layout_constraintBottom_toBottomOf="@+id/video_sv"
+        app:layout_constraintLeft_toRightOf="@+id/center_play_iv"
+        app:layout_constraintTop_toTopOf="@+id/video_sv"></ImageView>
 
     <RelativeLayout
-        android:id="@+id/control_rl"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="visible">
+        android:id="@+id/bottom_control_rl"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/control_bg"
+        app:layout_constraintBottom_toBottomOf="@+id/video_sv"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
 
         <ImageView
-            android:id="@+id/center_play_iv"
+            android:id="@+id/play_iv"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_centerInParent="true"
-            android:src="@drawable/ic_pause_white"></ImageView>
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:src="@drawable/ic_pause"></ImageView>
 
-        <View
-            android:id="@+id/divide_v"
+        <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+            android:id="@+id/progress_sb"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:background="@color/control_bg"></View>
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@+id/time_tv"
+            android:layout_toRightOf="@+id/play_iv"
+            android:visibility="visible"
+            app:dsb_max="100"
+            app:dsb_min="1" />
 
         <TextView
-            android:id="@+id/video_title_tv"
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_below="@+id/divide_v"
-            android:background="@color/control_bg"
-            android:gravity="center_vertical"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp"
-            android:singleLine="true"
-            android:text="title"
+            android:id="@+id/time_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@+id/full_screen_iv"
+            android:text="00:00/30:00"
             android:textColor="@color/white"
-            android:textSize="15sp"></TextView>
+            android:textSize="11sp"></TextView>
 
         <ImageView
-            android:id="@+id/back_iv"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:id="@+id/full_screen_iv"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="40dp"
-            android:layout_toLeftOf="@+id/center_play_iv"
-            android:src="@drawable/ic_fast_backward"></ImageView>
-
-        <ImageView
-            android:id="@+id/forward_iv"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="40dp"
-            android:layout_toRightOf="@+id/center_play_iv"
-            android:src="@drawable/ic_fast_forward"></ImageView>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_alignParentBottom="true"
-            android:background="@color/control_bg">
-
-            <ImageView
-                android:id="@+id/play_iv"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="15dp"
-                android:src="@drawable/ic_pause"></ImageView>
-
-            <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
-                android:id="@+id/progress_sb"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_toLeftOf="@+id/time_tv"
-                android:layout_toRightOf="@+id/play_iv"
-                android:visibility="visible"
-                app:dsb_max="100"
-                app:dsb_min="1" />
-
-            <TextView
-                android:id="@+id/time_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="10dp"
-                android:layout_toLeftOf="@+id/full_screen_iv"
-                android:text="00:00/30:00"
-                android:textColor="@color/white"
-                android:textSize="11sp"></TextView>
-
-            <ImageView
-                android:id="@+id/full_screen_iv"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="15dp"
-                android:src="@drawable/ic_full_screen1"></ImageView>
-        </RelativeLayout>
+            android:layout_marginRight="15dp"
+            android:src="@drawable/ic_full_screen1"></ImageView>
     </RelativeLayout>
 
     <Button
         android:id="@+id/choose_uri_btn"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
         android:text="选择视频文件"
-        android:visibility="gone"></Button>
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"></Button>
 
     <ImageView
         android:id="@+id/translate_iv"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_alignParentRight="true"
         android:layout_marginTop="30dp"
         android:layout_marginRight="20dp"
-        android:src="@drawable/ic_translation"></ImageView>
+        android:src="@drawable/ic_translation"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"></ImageView>
 
     <com.insightsurfface.videocrawler.widget.dragview.ShelterView
         android:id="@+id/shelter_dv"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="30dp"
-        android:layout_alignParentBottom="true"
         android:layout_marginBottom="30dp"
         android:elevation="3dp"
         android:src="#000000"
-        android:visibility="gone"></com.insightsurfface.videocrawler.widget.dragview.ShelterView>
-</RelativeLayout>
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"></com.insightsurfface.videocrawler.widget.dragview.ShelterView>
+</androidx.constraintlayout.widget.ConstraintLayout>
