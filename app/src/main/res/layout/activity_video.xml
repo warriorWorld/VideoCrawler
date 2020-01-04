@@ -54,7 +54,7 @@
         android:textSize="15sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/divide_v"></TextView>
+        app:layout_constraintTop_toBottomOf="@+id/divide_v"></TextView>
 
     <ImageView
         android:id="@+id/back_iv"
