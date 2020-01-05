@@ -683,12 +683,6 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                 }
                 break;
             case R.id.play_iv:
-                if (mPlayer.isPlaying()) {
-                    playPause();
-                } else {
-                    playStart();
-                }
-                break;
             case R.id.shelter_dv:
             case R.id.center_play_iv:
                 if (mPlayer.isPlaying()) {
@@ -705,8 +699,6 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                 }
                 if (mPlayer.isPlaying()) {
                     playPause();
-                } else {
-                    playStart();
                 }
                 break;
             case R.id.translate_iv:
