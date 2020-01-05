@@ -31,6 +31,7 @@ import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.insightsurface.lib.utils.Logger;
 import com.insightsurface.lib.utils.SharedPreferencesUtils;
+import com.insightsurfface.stylelibrary.keyboard.English26KeyBoardView;
 import com.insightsurfface.videocrawler.R;
 import com.insightsurfface.videocrawler.base.BaseActivity;
 import com.insightsurfface.videocrawler.bean.YoudaoResponse;
@@ -40,8 +41,10 @@ import com.insightsurfface.videocrawler.listener.OnEditResultListener;
 import com.insightsurfface.videocrawler.utils.DisplayUtil;
 import com.insightsurfface.videocrawler.utils.ScreenShot;
 import com.insightsurfface.videocrawler.utils.StringUtil;
+import com.insightsurfface.videocrawler.utils.VideoUtil;
 import com.insightsurfface.videocrawler.volley.VolleyCallBack;
 import com.insightsurfface.videocrawler.volley.VolleyTool;
+import com.insightsurfface.videocrawler.widget.dialog.ImgLandsacpeKeyboardDialog;
 import com.insightsurfface.videocrawler.widget.dialog.MangaImgEditDialog;
 import com.insightsurfface.videocrawler.widget.dialog.OnlyEditDialog;
 import com.insightsurfface.videocrawler.widget.dialog.TranslateDialog;
@@ -129,8 +132,8 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         id = intent.getIntExtra("id", 0);
         url = intent.getStringExtra("url");
         title = intent.getStringExtra("title");
-        if (TextUtils.isEmpty(url)){
-            url=intent.getDataString();
+        if (TextUtils.isEmpty(url)) {
+            url = intent.getDataString();
         }
         jumpGap = SharedPreferencesUtils.getIntSharedPreferencesData(this, ShareKeys.JUMP_FRAME_GAP, -1);
         shelterHeight = SharedPreferencesUtils.getIntSharedPreferencesData(this, ShareKeys.SHELTER_HEIGHT, -1);
@@ -214,7 +217,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         super.initUI();
         videoSv = findViewById(R.id.video_sv);
         chooseUriBtn = findViewById(R.id.choose_uri_btn);
-        controlGroup=findViewById(R.id.control_group);
+        controlGroup = findViewById(R.id.control_group);
         controlGroup.setVisibility(View.GONE);
         shelterDv = findViewById(R.id.shelter_dv);
         shelterDv.setSavePosition(true);
@@ -624,15 +627,16 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     }
 
     private void showImgLandscapeKeyBoardDialog(Bitmap bp) {
-        MangaImgEditDialog dialog = new MangaImgEditDialog(this);
-        dialog.setOnEditResultListener(new OnEditResultListener() {
+        playPause();
+        ImgLandsacpeKeyboardDialog dialog = new ImgLandsacpeKeyboardDialog(this);
+        dialog.setKeyBorad26Listener(new English26KeyBoardView.KeyBorad26Listener() {
             @Override
-            public void onResult(String text) {
-                translateWord(text);
+            public void inputFinish(String s) {
+                translateWord(s);
             }
 
             @Override
-            public void onCancelClick() {
+            public void closeKeyboard() {
 
             }
         });
@@ -683,10 +687,15 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                 }
                 break;
             case R.id.translate_iv:
-//                int top=shelterDv.getBottom();
-//                Bitmap bgBitmap = ScreenShot.takeScreenShot(this, 0,screenHeight,top, screenWidth-top);
-//                showImgLandscapeKeyBoardDialog(bgBitmap);
-                showSearchDialog();
+                int top = shelterDv.getBottom();
+                double ratio = Double.valueOf(top) / Double.valueOf(screenWidth);
+                //这个方法获取的图片大小是视频的大小 而不是播放控件的大小
+                Bitmap bgBitmap = VideoUtil.getVideoThumbnail(VideoActivity.this, Uri.parse(url), mPlayer.getCurrentPosition());
+                //所以需要按比例换算
+                top = (int) (ratio * bgBitmap.getHeight());
+                Bitmap finalBp = Bitmap.createBitmap(bgBitmap, 0, top, bgBitmap.getWidth(), bgBitmap.getHeight() - top);
+                showImgLandscapeKeyBoardDialog(finalBp);
+//                showSearchDialog();
                 break;
             case R.id.back_iv:
                 mHandler.removeMessages(RELOCATION_PROGRESS);
