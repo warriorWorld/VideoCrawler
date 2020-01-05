@@ -17,7 +17,13 @@
         android:id="@+id/control_group"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="center_play_iv,divide_v,forward_iv,back_iv,video_title_tv,bottom_control_rl"></androidx.constraintlayout.widget.Group>
+        app:constraint_referenced_ids="divide_v,video_title_tv,bottom_control_rl"></androidx.constraintlayout.widget.Group>
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/center_control_group"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="center_play_iv,forward_iv,back_iv"></androidx.constraintlayout.widget.Group>
 
     <ImageView
         android:id="@+id/center_play_iv"
@@ -133,8 +139,8 @@
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:text="选择视频文件"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"></Button>
 

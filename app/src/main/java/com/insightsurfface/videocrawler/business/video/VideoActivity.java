@@ -124,7 +124,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private Sensor mSensorAccelerometer;
     private ImageView backIv, forwardIv, centerPlayIv;
     private int jumpGap, shelterHeight;
-    private Group controlGroup;
+    private Group controlGroup,centerControlGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -219,6 +219,8 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         chooseUriBtn = findViewById(R.id.choose_uri_btn);
         controlGroup = findViewById(R.id.control_group);
         controlGroup.setVisibility(View.GONE);
+        centerControlGroup=findViewById(R.id.center_control_group);
+        centerControlGroup.setVisibility(View.GONE);
         shelterDv = findViewById(R.id.shelter_dv);
         shelterDv.setSavePosition(true);
         shelterDv.setLastPosKey("POS_KEY");
@@ -364,7 +366,11 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         mPlayer.start();
         playIv.setImageResource(R.drawable.ic_pause);
         centerPlayIv.setImageResource(R.drawable.ic_pause_white);
+        if (!controlGroup.isShown()) {
+            centerControlGroup.setVisibility(View.GONE);
+        }
         mHandler.removeMessages(RELOCATION_PROGRESS);
+        setShelterVisible(true);
     }
 
     private void playPause() {
@@ -372,6 +378,8 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
             mPlayer.pause();
             playIv.setImageResource(R.drawable.ic_play);
             centerPlayIv.setImageResource(R.drawable.ic_play_white);
+            setShelterVisible(false);
+            centerControlGroup.setVisibility(View.VISIBLE);
             lastPauseLocation = mPlayer.getCurrentPosition();
             if (jumpGap == -1) {
                 //用户未设置
@@ -500,7 +508,6 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
             if (orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
 //                baseTopBar.setVisibility(View.VISIBLE);
                 titleTv.setVisibility(View.GONE);
-                shelterDv.setVisibility(View.GONE);
                 resizeSurfaceView(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                 fullScreenIv.setImageResource(R.drawable.ic_full_screen1);
             } else {
@@ -513,13 +520,21 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         }
     }
 
+    private void setShelterVisible(boolean show) {
+        if (show) {
+            shelterDv.setVisibility(View.VISIBLE);
+        } else {
+            shelterDv.setVisibility(View.GONE);
+        }
+    }
+
     @Override
     public void onBackPressed() {
-        if (isPortrait()) {
-            super.onBackPressed();
-        } else {
-            setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        }
+//        if (isPortrait()) {
+        super.onBackPressed();
+//        } else {
+//            setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+//        }
     }
 
     private boolean isPortrait() {
@@ -533,10 +548,10 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
 
     private void showControl() {
         controlGroup.setVisibility(View.VISIBLE);
+        centerControlGroup.setVisibility(View.VISIBLE);
         mHandler.removeMessages(HIDE_CONTROL);
         mHandler.sendEmptyMessage(UPDATE_TIME);
-        mHandler.sendEmptyMessageDelayed(HIDE_CONTROL, 30000);
-        shelterDv.setVisibility(View.GONE);
+        mHandler.sendEmptyMessageDelayed(HIDE_CONTROL, 6000);
     }
 
     private void hideControl() {
@@ -545,8 +560,8 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         }
         mHandler.removeMessages(UPDATE_TIME);
         controlGroup.setVisibility(View.GONE);
-        if (!isPortrait()) {
-            shelterDv.setVisibility(View.VISIBLE);
+        if (mPlayer.isPlaying()){
+            centerControlGroup.setVisibility(View.GONE);
         }
     }
 
@@ -670,10 +685,8 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
             case R.id.play_iv:
                 if (mPlayer.isPlaying()) {
                     playPause();
-                    showControl();
                 } else {
                     playStart();
-                    hideControl();
                 }
                 break;
             case R.id.shelter_dv:
