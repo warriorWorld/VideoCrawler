@@ -26,7 +26,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
     implementation 'com.github.warriorWorld:SuhangLib:1.0.9'
-    implementation 'com.github.warriorWorld:StyleLibrary:1.1.5'
+    implementation 'com.github.warriorWorld:StyleLibrary:1.1.7'
     implementation 'org.greenrobot:eventbus:3.0.0'
     implementation 'pub.devrel:easypermissions:1.0.0'
     implementation 'org.adw.library:discrete-seekbar:1.0.1'
