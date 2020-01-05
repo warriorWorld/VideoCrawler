@@ -16,10 +16,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.insightsurface.lib.base.BaseFragment;
-import com.insightsurface.lib.listener.OnEditResultListener;
 import com.insightsurface.lib.utils.NumberUtil;
 import com.insightsurface.lib.utils.SharedPreferencesUtils;
-import com.insightsurface.lib.widget.dialog.EditDialog;
+import com.insightsurfface.stylelibrary.dialog.EditDialog;
+import com.insightsurfface.stylelibrary.listener.OnEditResultListener;
 import com.insightsurfface.videocrawler.R;
 import com.insightsurfface.videocrawler.config.ShareKeys;
 
