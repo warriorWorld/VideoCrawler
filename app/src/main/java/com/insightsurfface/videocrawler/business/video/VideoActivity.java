@@ -427,7 +427,20 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         progressSb.setMax(duration);
         titleTv.setText(title);
         recoverState();
-        playStart();
+        Handler handler = new Handler();
+        Runnable updateThread = new Runnable() {
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                        playStart();
+                    }
+                });
+            }
+        };
+        handler.postDelayed(updateThread, 500);
+
     }
 
     @Override
@@ -588,12 +601,10 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
             translateResultDialog.setOnPeanutDialogClickListener(new TranslateDialog.OnPeanutDialogClickListener() {
                 @Override
                 public void onOkClick() {
-                    playStart();
                 }
 
                 @Override
                 public void onCancelClick() {
-                    playStart();
                 }
             });
         }
@@ -627,7 +638,6 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     }
 
     private void showImgLandscapeKeyBoardDialog(Bitmap bp) {
-        playPause();
         ImgLandsacpeKeyboardDialog dialog = new ImgLandsacpeKeyboardDialog(this);
         dialog.setKeyBorad26Listener(new English26KeyBoardView.KeyBorad26Listener() {
             @Override
@@ -687,6 +697,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                 }
                 break;
             case R.id.translate_iv:
+                playPause();
                 int top = shelterDv.getBottom();
                 double ratio = Double.valueOf(top) / Double.valueOf(screenWidth);
                 //这个方法获取的图片大小是视频的大小 而不是播放控件的大小
