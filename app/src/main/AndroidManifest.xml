@@ -36,6 +36,7 @@
             android:name=".business.video.TestActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"></activity>
+        <activity android:name=".business.filechoose.FileChooseActivity"></activity>
     </application>
 
 </manifest>

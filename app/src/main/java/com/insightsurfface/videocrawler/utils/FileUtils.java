@@ -17,10 +17,13 @@ package com.insightsurfface.videocrawler.utils;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
+import android.provider.MediaStore;
 
 import com.insightsurface.lib.utils.Logger;
+import com.insightsurfface.videocrawler.bean.VideoBean;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -690,5 +693,60 @@ public class FileUtils {
             return uri.getPath();
         }
         return null;
+    }
+
+    /**
+     * 获取本机视频列表
+     *
+     * @return
+     */
+    public static ArrayList<VideoBean> getVideos(Context context) {
+
+        ArrayList<VideoBean> videos = new ArrayList<VideoBean>();
+
+        Cursor c = null;
+        try {
+            // String[] mediaColumns = { "_id", "_data", "_display_name",
+            // "_size", "date_modified", "duration", "resolution" };
+            c = context.getContentResolver().query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null, null, null, MediaStore.Video.Media.DEFAULT_SORT_ORDER);
+            while (c.moveToNext()) {
+                String path = c.getString(c.getColumnIndexOrThrow(MediaStore.Video.Media.DATA));// 路径
+                if (!FileUtils.isExists(path)) {
+                    continue;
+                }
+
+                int id = c.getInt(c.getColumnIndexOrThrow(MediaStore.Video.Media._ID));// 视频的id
+                String name = c.getString(c.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME)); // 视频名称
+                String resolution = c.getString(c.getColumnIndexOrThrow(MediaStore.Video.Media.RESOLUTION)); //分辨率
+                long size = c.getLong(c.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE));// 大小
+                long duration = c.getLong(c.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION));// 时长
+                long date = c.getLong(c.getColumnIndexOrThrow(MediaStore.Video.Media.DATE_MODIFIED));//修改时间
+                Bitmap thumbnial=VideoUtil.getVideoThumbnail(context,Uri.parse(path));
+                VideoBean video = new VideoBean();
+                video.setPath(path);
+                video.setTitle(name);
+                video.setThumbnail(thumbnial);
+                video.setDuration((int)duration);
+                videos.add(video);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (c != null) {
+                c.close();
+            }
+        }
+        return videos;
+    }
+
+    /**
+     * 判断文件是否存在
+     *
+     * @param path 文件的路径
+     * @return
+     */
+    public static boolean isExists(String path) {
+        File file = new File(path);
+        return file.exists();
     }
 }
