@@ -561,8 +561,12 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         }
         mHandler.removeMessages(UPDATE_TIME);
         controlGroup.setVisibility(View.GONE);
-        if (null != mPlayer && mPlayer.isPlaying()) {
-            centerControlGroup.setVisibility(View.GONE);
+        try {
+            if (null != mPlayer && mPlayer.isPlaying()) {
+                centerControlGroup.setVisibility(View.GONE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -653,11 +657,12 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         searchDialog.clearEdit();
     }
 
-    private void showImgLandscapeKeyBoardDialog(Bitmap bp) {
+    private void showImgLandscapeKeyBoardDialog(final Bitmap bp) {
         ImgLandsacpeKeyboardDialog dialog = new ImgLandsacpeKeyboardDialog(this);
         dialog.setKeyBorad26Listener(new English26KeyBoardView.KeyBorad26Listener() {
             @Override
             public void inputFinish(String s) {
+                bp.recycle();
                 translateWord(s);
             }
 
@@ -712,6 +717,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                     //所以需要按比例换算
                     top = (int) (ratio * bgBitmap.getHeight());
                     Bitmap finalBp = Bitmap.createBitmap(bgBitmap, 0, top, bgBitmap.getWidth(), bgBitmap.getHeight() - top);
+                    bgBitmap.recycle();
                     showImgLandscapeKeyBoardDialog(finalBp);
 //                showSearchDialog();
                 }
