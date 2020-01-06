@@ -32,4 +32,5 @@ dependencies {
     implementation 'org.adw.library:discrete-seekbar:1.0.1'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation files('libs/Volley.jar')
+    implementation files('libs/afinal-0.3.32-bin.jar')
 }
