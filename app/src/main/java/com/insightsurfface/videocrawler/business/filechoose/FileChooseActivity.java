@@ -7,6 +7,7 @@ import android.widget.Button;
 
 import com.insightsurface.lib.base.BaseRefreshListActivity;
 import com.insightsurface.lib.utils.Logger;
+import com.insightsurface.lib.utils.SingleLoadBarUtil;
 import com.insightsurface.lib.widget.bar.TopBar;
 import com.insightsurfface.videocrawler.R;
 import com.insightsurfface.videocrawler.adapter.VideoChooserAdapter;
@@ -100,7 +101,9 @@ public class FileChooseActivity extends BaseRefreshListActivity implements View.
 
     @Override
     protected void doGetData() {
+        SingleLoadBarUtil.getInstance().showLoadBar(this);
         videoList = FileUtils.getVideos(this);
+        SingleLoadBarUtil.getInstance().dismissLoadBar();
         initRec();
     }
 
