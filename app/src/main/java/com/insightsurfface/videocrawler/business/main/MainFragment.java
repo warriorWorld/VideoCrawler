@@ -25,6 +25,7 @@ import com.insightsurfface.videocrawler.business.video.VideoActivity;
 import com.insightsurfface.videocrawler.db.DbAdapter;
 import com.insightsurfface.videocrawler.listener.OnEmptyBtnClick;
 import com.insightsurfface.videocrawler.listener.OnListDialogListener;
+import com.insightsurfface.videocrawler.utils.FastClickUtil;
 import com.insightsurfface.videocrawler.utils.FileUtils;
 import com.insightsurfface.videocrawler.utils.StringUtil;
 import com.insightsurfface.videocrawler.utils.VideoUtil;
@@ -72,10 +73,12 @@ public class MainFragment extends BaseRefreshListFragment {
 
             @Override
             public void onRightClick() {
+                if (FastClickUtil.isNotFastClick()) {
 //                showFileChooser();
-                Intent intent = new Intent(getActivity(), FileChooseActivity.class);
-                //必须使用 getActivity().startActivityForResult 否则requestCode无法对应
-                getActivity().startActivityForResult(intent, 2);
+                    Intent intent = new Intent(getActivity(), FileChooseActivity.class);
+                    //必须使用 getActivity().startActivityForResult 否则requestCode无法对应
+                    getActivity().startActivityForResult(intent, 2);
+                }
             }
 
             @Override

@@ -39,6 +39,7 @@ import com.insightsurfface.videocrawler.config.Configure;
 import com.insightsurfface.videocrawler.config.ShareKeys;
 import com.insightsurfface.videocrawler.listener.OnEditResultListener;
 import com.insightsurfface.videocrawler.utils.DisplayUtil;
+import com.insightsurfface.videocrawler.utils.FastClickUtil;
 import com.insightsurfface.videocrawler.utils.ScreenShot;
 import com.insightsurfface.videocrawler.utils.StringUtil;
 import com.insightsurfface.videocrawler.utils.VideoUtil;
@@ -124,7 +125,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private Sensor mSensorAccelerometer;
     private ImageView backIv, forwardIv, centerPlayIv;
     private int jumpGap, shelterHeight;
-    private Group controlGroup,centerControlGroup;
+    private Group controlGroup, centerControlGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -219,7 +220,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         chooseUriBtn = findViewById(R.id.choose_uri_btn);
         controlGroup = findViewById(R.id.control_group);
         controlGroup.setVisibility(View.GONE);
-        centerControlGroup=findViewById(R.id.center_control_group);
+        centerControlGroup = findViewById(R.id.center_control_group);
         centerControlGroup.setVisibility(View.GONE);
         shelterDv = findViewById(R.id.shelter_dv);
         shelterDv.setSavePosition(true);
@@ -560,7 +561,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         }
         mHandler.removeMessages(UPDATE_TIME);
         controlGroup.setVisibility(View.GONE);
-        if (null!=mPlayer&&mPlayer.isPlaying()){
+        if (null != mPlayer && mPlayer.isPlaying()) {
             centerControlGroup.setVisibility(View.GONE);
         }
     }
@@ -702,16 +703,18 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                 }
                 break;
             case R.id.translate_iv:
-                playPause();
-                int top = shelterDv.getBottom();
-                double ratio = Double.valueOf(top) / Double.valueOf(screenWidth);
-                //这个方法获取的图片大小是视频的大小 而不是播放控件的大小
-                Bitmap bgBitmap = VideoUtil.getVideoThumbnail(VideoActivity.this, Uri.parse(url), mPlayer.getCurrentPosition());
-                //所以需要按比例换算
-                top = (int) (ratio * bgBitmap.getHeight());
-                Bitmap finalBp = Bitmap.createBitmap(bgBitmap, 0, top, bgBitmap.getWidth(), bgBitmap.getHeight() - top);
-                showImgLandscapeKeyBoardDialog(finalBp);
+                if (FastClickUtil.isNotFastClick()) {
+                    playPause();
+                    int top = shelterDv.getBottom();
+                    double ratio = Double.valueOf(top) / Double.valueOf(screenWidth);
+                    //这个方法获取的图片大小是视频的大小 而不是播放控件的大小
+                    Bitmap bgBitmap = VideoUtil.getVideoThumbnail(VideoActivity.this, Uri.parse(url), mPlayer.getCurrentPosition());
+                    //所以需要按比例换算
+                    top = (int) (ratio * bgBitmap.getHeight());
+                    Bitmap finalBp = Bitmap.createBitmap(bgBitmap, 0, top, bgBitmap.getWidth(), bgBitmap.getHeight() - top);
+                    showImgLandscapeKeyBoardDialog(finalBp);
 //                showSearchDialog();
+                }
                 break;
             case R.id.back_iv:
                 mHandler.removeMessages(RELOCATION_PROGRESS);
