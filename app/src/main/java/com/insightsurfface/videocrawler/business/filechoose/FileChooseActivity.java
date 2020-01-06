@@ -101,9 +101,7 @@ public class FileChooseActivity extends BaseRefreshListActivity implements View.
 
     @Override
     protected void doGetData() {
-        SingleLoadBarUtil.getInstance().showLoadBar(this);
         videoList = FileUtils.getVideos(this);
-        SingleLoadBarUtil.getInstance().dismissLoadBar();
         initRec();
     }
 

@@ -31,7 +31,6 @@ import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.insightsurface.lib.utils.Logger;
 import com.insightsurface.lib.utils.SharedPreferencesUtils;
-import com.insightsurface.lib.utils.SingleLoadBarUtil;
 import com.insightsurfface.stylelibrary.keyboard.English26KeyBoardView;
 import com.insightsurfface.videocrawler.R;
 import com.insightsurfface.videocrawler.base.BaseActivity;
@@ -704,7 +703,6 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                 break;
             case R.id.translate_iv:
                 playPause();
-                SingleLoadBarUtil.getInstance().showLoadBar(VideoActivity.this);
                 int top = shelterDv.getBottom();
                 double ratio = Double.valueOf(top) / Double.valueOf(screenWidth);
                 //这个方法获取的图片大小是视频的大小 而不是播放控件的大小
@@ -713,7 +711,6 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                 top = (int) (ratio * bgBitmap.getHeight());
                 Bitmap finalBp = Bitmap.createBitmap(bgBitmap, 0, top, bgBitmap.getWidth(), bgBitmap.getHeight() - top);
                 showImgLandscapeKeyBoardDialog(finalBp);
-                SingleLoadBarUtil.getInstance().dismissLoadBar();
 //                showSearchDialog();
                 break;
             case R.id.back_iv:
