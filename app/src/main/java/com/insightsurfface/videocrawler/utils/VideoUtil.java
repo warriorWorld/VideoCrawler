@@ -36,7 +36,7 @@ public class VideoUtil {
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         try {
             retriever.setDataSource(context, uri);
-            bitmap = retriever.getFrameAtTime(pos*1000, MediaMetadataRetriever.OPTION_CLOSEST);
+            bitmap = retriever.getFrameAtTime(pos*1000L, MediaMetadataRetriever.OPTION_CLOSEST);
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (RuntimeException e) {
