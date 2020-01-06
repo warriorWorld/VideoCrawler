@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.insightsurface.lib.base.BaseRefreshListActivity;
 import com.insightsurface.lib.utils.Logger;
@@ -24,6 +25,7 @@ public class FileChooseActivity extends BaseRefreshListActivity implements View.
     private VideoChooserAdapter mAdapter;
     private ArrayList<VideoBean> videoList = new ArrayList<>();
     private Button doneBtn;
+    private TextView sizeTv;
 
     @Override
     public void onClick(View v) {
@@ -63,6 +65,7 @@ public class FileChooseActivity extends BaseRefreshListActivity implements View.
     protected void initUI() {
         super.initUI();
         doneBtn = findViewById(R.id.ok_btn);
+        sizeTv = findViewById(R.id.file_size_tv);
         refreshRcv.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         refreshRcv.setFocusableInTouchMode(false);
         refreshRcv.setFocusable(false);
@@ -102,6 +105,7 @@ public class FileChooseActivity extends BaseRefreshListActivity implements View.
     @Override
     protected void doGetData() {
         videoList = FileUtils.getVideos(this);
+        sizeTv.setText(videoList.size() + "");
         initRec();
     }
 
