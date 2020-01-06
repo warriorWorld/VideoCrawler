@@ -73,8 +73,9 @@ public class MainFragment extends BaseRefreshListFragment {
             @Override
             public void onRightClick() {
 //                showFileChooser();
-                Intent intent=new Intent(getActivity(), FileChooseActivity.class);
-                startActivity(intent);
+                Intent intent = new Intent(getActivity(), FileChooseActivity.class);
+                //必须使用 getActivity().startActivityForResult 否则requestCode无法对应
+                getActivity().startActivityForResult(intent, 2);
             }
 
             @Override
@@ -94,7 +95,24 @@ public class MainFragment extends BaseRefreshListFragment {
 //        intent.setType("text/plain");//设置类型和后缀 txt
         intent.setType("video/*");//设置类型和后缀  全部文件
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        startActivityForResult(intent, 1);
+        getActivity().startActivityForResult(intent, 1);
+    }
+
+    public void addVideo(final ArrayList<VideoBean> list) {
+        if (null == list || list.size() == 0) {
+            return;
+        }
+        SingleLoadBarUtil.getInstance().showLoadBar(getActivity());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (VideoBean item : list) {
+                    db.insertVideoTableTb(getActivity(), item.getPath(),item.getTitle(), item.getDuration(), 0);
+                }
+                SingleLoadBarUtil.getInstance().dismissLoadBar();
+                mHandler.sendEmptyMessage(UPDATE_LIST);
+            }
+        }).start();
     }
 
     public void addVideo(final String path) {
@@ -149,7 +167,7 @@ public class MainFragment extends BaseRefreshListFragment {
         return null;
     }
 
-    private void showDeleteDialog(final int id,final String path) {
+    private void showDeleteDialog(final int id, final String path) {
         NormalDialog dialog = new NormalDialog(getActivity());
         dialog.setOnDialogClickListener(new OnDialogClickListener() {
             @Override
@@ -192,7 +210,7 @@ public class MainFragment extends BaseRefreshListFragment {
                         deleteVideo(getActivity(), videoList.get(deletePos).getId());
                         break;
                     case 1:
-                        showDeleteDialog(videoList.get(deletePos).getId(),videoList.get(deletePos).getPath());
+                        showDeleteDialog(videoList.get(deletePos).getId(), videoList.get(deletePos).getPath());
                         break;
                 }
             }

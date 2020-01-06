@@ -1,16 +1,43 @@
 package com.insightsurfface.videocrawler.bean;
 
 import android.graphics.Bitmap;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.insightsurface.lib.bean.BaseBean;
 
-public class VideoBean extends BaseBean {
+public class VideoBean extends BaseBean implements Parcelable {
     private int id;
     private String title;
     private String path;
     private int duration;
     private int watched_time;
     private Bitmap thumbnail;
+
+    public VideoBean() {
+
+    }
+
+    protected VideoBean(Parcel in) {
+        id = in.readInt();
+        title = in.readString();
+        path = in.readString();
+        duration = in.readInt();
+        watched_time = in.readInt();
+        thumbnail = in.readParcelable(Bitmap.class.getClassLoader());
+    }
+
+    public static final Creator<VideoBean> CREATOR = new Creator<VideoBean>() {
+        @Override
+        public VideoBean createFromParcel(Parcel in) {
+            return new VideoBean(in);
+        }
+
+        @Override
+        public VideoBean[] newArray(int size) {
+            return new VideoBean[size];
+        }
+    };
 
     public String getTitle() {
         return title;
@@ -58,5 +85,20 @@ public class VideoBean extends BaseBean {
 
     public void setThumbnail(Bitmap thumbnail) {
         this.thumbnail = thumbnail;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(title);
+        dest.writeString(path);
+        dest.writeInt(duration);
+        dest.writeInt(watched_time);
+        dest.writeParcelable(thumbnail, flags);
     }
 }
