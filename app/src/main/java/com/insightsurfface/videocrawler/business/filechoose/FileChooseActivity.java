@@ -1,16 +1,14 @@
 package com.insightsurfface.videocrawler.business.filechoose;
 
-import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.Button;
 
-import com.insightsurface.lib.base.BaseRefreshActivity;
 import com.insightsurface.lib.base.BaseRefreshListActivity;
-import com.insightsurface.lib.listener.OnRecycleItemClickListener;
+import com.insightsurface.lib.utils.Logger;
 import com.insightsurface.lib.widget.bar.TopBar;
+import com.insightsurfface.videocrawler.R;
 import com.insightsurfface.videocrawler.adapter.VideoChooserAdapter;
-import com.insightsurfface.videocrawler.base.BaseActivity;
 import com.insightsurfface.videocrawler.bean.VideoBean;
 import com.insightsurfface.videocrawler.utils.DisplayUtil;
 import com.insightsurfface.videocrawler.utils.FileUtils;
@@ -20,9 +18,26 @@ import java.util.ArrayList;
 
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
-public class FileChooseActivity extends BaseRefreshListActivity {
+public class FileChooseActivity extends BaseRefreshListActivity implements View.OnClickListener {
     private VideoChooserAdapter mAdapter;
     private ArrayList<VideoBean> videoList = new ArrayList<>();
+    private Button doneBtn;
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.ok_btn:
+                Logger.d("selected size:" + mAdapter.getSelectedList().size() + "");
+                break;
+        }
+    }
+
+    public enum SelectAllState {
+        SELECT_ALL,
+        CANCEL_ALL
+    }
+
+    private SelectAllState mSelectAllState = SelectAllState.CANCEL_ALL;
 
     @Override
     protected void onCreateInit() {
@@ -30,8 +45,14 @@ public class FileChooseActivity extends BaseRefreshListActivity {
     }
 
     @Override
+    protected int getLayoutId() {
+        return R.layout.activity_file_chooser;
+    }
+
+    @Override
     protected void initUI() {
         super.initUI();
+        doneBtn = findViewById(R.id.ok_btn);
         refreshRcv.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         refreshRcv.setFocusableInTouchMode(false);
         refreshRcv.setFocusable(false);
@@ -46,7 +67,18 @@ public class FileChooseActivity extends BaseRefreshListActivity {
 
             @Override
             public void onRightClick() {
-
+                switch (mSelectAllState) {
+                    case CANCEL_ALL:
+                        mAdapter.selectAll();
+                        mSelectAllState = SelectAllState.SELECT_ALL;
+                        baseTopBar.setRightText("取消全选");
+                        break;
+                    case SELECT_ALL:
+                        mAdapter.removeAllSelected();
+                        mSelectAllState = SelectAllState.CANCEL_ALL;
+                        baseTopBar.setRightText("全选");
+                        break;
+                }
             }
 
             @Override
@@ -54,6 +86,7 @@ public class FileChooseActivity extends BaseRefreshListActivity {
 
             }
         });
+        doneBtn.setOnClickListener(this);
     }
 
     @Override
@@ -68,11 +101,6 @@ public class FileChooseActivity extends BaseRefreshListActivity {
             if (null == mAdapter) {
                 mAdapter = new VideoChooserAdapter(this);
                 mAdapter.setList(videoList);
-                mAdapter.setOnRecycleItemClickListener(new OnRecycleItemClickListener() {
-                    @Override
-                    public void onItemClick(int position) {
-                    }
-                });
                 refreshRcv.setAdapter(mAdapter);
                 ColorDrawable dividerDrawable = new ColorDrawable(0x00000000) {
                     @Override
@@ -93,6 +121,7 @@ public class FileChooseActivity extends BaseRefreshListActivity {
                 mAdapter.notifyDataSetChanged();
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
         swipeToLoadLayout.setRefreshing(false);
     }

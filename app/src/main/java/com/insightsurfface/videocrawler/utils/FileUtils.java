@@ -726,7 +726,7 @@ public class FileUtils {
                 video.setPath(path);
                 video.setTitle(name);
                 video.setThumbnail(thumbnial);
-                video.setDuration((int)duration);
+                video.setDuration((int)(duration/1000f));
                 videos.add(video);
             }
         } catch (Exception e) {

@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,10 +28,9 @@ import androidx.recyclerview.widget.RecyclerView;
  */
 public class VideoChooserAdapter extends BaseRecyclerAdapter {
     private ArrayList<VideoBean> list = null;
-    private OnRecycleItemClickListener onRecycleItemClickListener;
-    private OnRecycleItemLongClickListener mOnRecycleItemLongClickListener;
     private SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日 HH时mm分ss秒");
     private OnEmptyBtnClick mOnEmptyBtnClick;
+    private ArrayList<VideoBean> selectedList = new ArrayList<>();
 
     public VideoChooserAdapter(Context context) {
         super(context);
@@ -76,28 +76,30 @@ public class VideoChooserAdapter extends BaseRecyclerAdapter {
     }
 
     @Override
-    protected void refreshNormalViewHolder(RecyclerView.ViewHolder viewHolder, final int position) {
+    protected void refreshNormalViewHolder(final RecyclerView.ViewHolder viewHolder, final int position) {
         final VideoBean item = list.get(position);
         ((NormalViewHolder) viewHolder).titleTv.setText(item.getTitle());
         ((NormalViewHolder) viewHolder).durationTv.setText(StringUtil.second2Hour(item.getDuration()));
+        ((NormalViewHolder) viewHolder).videoCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    if (!selectedList.contains(item)) {
+                        selectedList.add(item);
+                    }
+                } else {
+                    selectedList.remove(item);
+                }
+            }
+        });
+        ((NormalViewHolder) viewHolder).videoCb.setChecked(null!=selectedList&&selectedList.contains(item));
         ((NormalViewHolder) viewHolder).videoLl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (null != onRecycleItemClickListener) {
-                    onRecycleItemClickListener.onItemClick(position);
-                }
+                ((NormalViewHolder) viewHolder).videoCb.setChecked(!((NormalViewHolder) viewHolder).videoCb.isChecked());
             }
         });
         ((NormalViewHolder) viewHolder).videoThumbnailIv.setImageBitmap(item.getThumbnail());
-        ((NormalViewHolder) viewHolder).videoLl.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if (null != mOnRecycleItemLongClickListener) {
-                    mOnRecycleItemLongClickListener.onItemLongClick(position);
-                }
-                return true;
-            }
-        });
     }
 
     public void setList(ArrayList<VideoBean> list) {
@@ -108,16 +110,24 @@ public class VideoChooserAdapter extends BaseRecyclerAdapter {
         return list;
     }
 
-    public void setOnRecycleItemClickListener(OnRecycleItemClickListener onRecycleItemClickListener) {
-        this.onRecycleItemClickListener = onRecycleItemClickListener;
-    }
-
-    public void setOnRecycleItemLongClickListener(OnRecycleItemLongClickListener onRecycleItemLongClickListener) {
-        mOnRecycleItemLongClickListener = onRecycleItemLongClickListener;
-    }
-
     public void setOnEmptyBtnClick(OnEmptyBtnClick onEmptyBtnClick) {
         mOnEmptyBtnClick = onEmptyBtnClick;
+    }
+
+    public ArrayList<VideoBean> getSelectedList() {
+        return selectedList;
+    }
+
+    public void selectAll() {
+        selectedList = list;
+        notifyDataSetChanged();
+    }
+
+    public void removeAllSelected() {
+        //因为selectedList已经被赋值为list 所以他们指向同一个资源 如果清空就全清空了
+//        selectedList.clear();
+        selectedList=new ArrayList<>();
+        notifyDataSetChanged();
     }
 
     //自定义的ViewHolder，持有每个Item的的所有界面元素

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        layout="@layout/activity_only_refresh_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/ok_btn"></include>
+
+    <Button
+        android:id="@+id/ok_btn"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/btn_click_bg_rect"
+        android:text="确定"
+        android:textColor="@drawable/btn_text_click_rewrite"
+        android:textSize="18sp"></Button>
+</RelativeLayout>
