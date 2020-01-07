@@ -443,7 +443,9 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        setOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                        if (videoWidth>videoHeight) {
+                            setOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                        }
                         playStart();
                     }
                 });
