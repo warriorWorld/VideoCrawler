@@ -305,10 +305,44 @@ public class UserFragment extends BaseFragment implements View.OnClickListener,
         dialog.setMessage("请输入要设置的跳帧间隔(单位：毫秒 1秒=1000毫秒)，不需要请输入0。");
     }
 
+    private void showKeyboardSettingDialog() {
+        NormalDialog dialog = new NormalDialog(getActivity());
+        dialog.show();
+        dialog.setTitle("键盘设置");
+        dialog.setOkBtnText("完美");
+        dialog.setMessage("我看了看，现在这键盘已几近完美，所以没什么好设置的。");
+    }
+
+    private void showShareDialog() {
+        NormalDialog dialog = new NormalDialog(getActivity());
+        dialog.setOnDialogClickListener(new OnDialogClickListener() {
+            @Override
+            public void onOkClick() {
+                clip.setText(Configure.DOWNLOAD_URL);
+            }
+
+            @Override
+            public void onCancelClick() {
+
+            }
+        });
+        dialog.show();
+        dialog.setTitle("分享");
+        dialog.setMessage("点击按钮复制App下载链接，该链接为GitHub链接，下载时可能需要VPN。");
+        dialog.setOkBtnText("复制链接地址");
+        dialog.setCancelBtnText("取消");
+    }
+
     @Override
     public void onClick(View v) {
         Intent intent = null;
         switch (v.getId()) {
+            case R.id.share_rl:
+                showShareDialog();
+                break;
+            case R.id.keyboard_rl:
+                showKeyboardSettingDialog();
+                break;
             case R.id.user_iv:
                 break;
             case R.id.shelter_rl:
