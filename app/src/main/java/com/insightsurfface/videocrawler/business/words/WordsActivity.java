@@ -34,7 +34,7 @@ public class WordsActivity extends BaseRefreshListActivity implements SensorEven
     private ClipboardManager clip;//复制文本用
     private SensorManager sManager;
     private Sensor mSensorAccelerometer;
-    private int currentOrientation = -1;
+    private int currentOrientation = 0;
     private int screenWidth, screenHeight;
 
     @Override
@@ -109,13 +109,13 @@ public class WordsActivity extends BaseRefreshListActivity implements SensorEven
                 });
                 refreshRcv.setAdapter(mAdapter);
             } else {
+//                if (isPortrait()) {
+//                    mAdapter.setCurrentWidth(screenWidth);
+//                } else {
+//                    mAdapter.setCurrentWidth(screenHeight);
+//                }
                 mAdapter.setList(wordsList);
                 mAdapter.notifyDataSetChanged();
-            }
-            if (isPortrait()) {
-                mAdapter.setCurrentWidth(screenWidth);
-            } else {
-                mAdapter.setCurrentWidth(screenHeight);
             }
         } catch (Exception e) {
             noMoreData();
@@ -149,18 +149,21 @@ public class WordsActivity extends BaseRefreshListActivity implements SensorEven
                     setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                     if (null != mAdapter) {
                         mAdapter.setCurrentWidth(screenWidth);
+                        mAdapter.notifyDataSetChanged();
                     }
                 } else if (gyroscope_x >= 8 && currentOrientation != 90) {
                     currentOrientation = 90;
                     setOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                     if (null != mAdapter) {
                         mAdapter.setCurrentWidth(screenHeight);
+                        mAdapter.notifyDataSetChanged();
                     }
                 } else if (gyroscope_x <= -8 && currentOrientation != 270) {
                     currentOrientation = 270;
                     setOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
                     if (null != mAdapter) {
                         mAdapter.setCurrentWidth(screenHeight);
+                        mAdapter.notifyDataSetChanged();
                     }
                 }
             } catch (Exception e) {
