@@ -227,6 +227,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         shelterDv = findViewById(R.id.shelter_dv);
         shelterDv.setSavePosition(true);
         shelterDv.setLastPosKey("POS_KEY");
+        shelterDv.bringToFront();
         shelterDv.setOnDragListener(new ShelterView.OnDragListener() {
             @Override
             public void dragStart() {

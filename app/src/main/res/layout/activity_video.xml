@@ -154,6 +154,11 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"></ImageView>
 
+    <!--解决surfaceView上方控件动画或拖动时的遮挡问题-->
+    <View
+        android:layout_width="match_parent"
+        android:background="@color/transparency"
+        android:layout_height="match_parent"/>
     <com.insightsurfface.videocrawler.widget.dragview.ShelterView
         android:id="@+id/shelter_dv"
         android:layout_width="0dp"
