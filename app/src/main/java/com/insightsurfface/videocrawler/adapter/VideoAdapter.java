@@ -15,6 +15,7 @@ import com.insightsurfface.videocrawler.R;
 import com.insightsurfface.videocrawler.bean.VideoBean;
 import com.insightsurfface.videocrawler.listener.OnEmptyBtnClick;
 import com.insightsurfface.videocrawler.utils.StringUtil;
+import com.insightsurfface.videocrawler.widget.imageview.WrapHeightImageView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -88,7 +89,7 @@ public class VideoAdapter extends BaseRecyclerAdapter {
                 }
             }
         });
-        ((NormalViewHolder) viewHolder).videoThumbnailIv.setImageBitmap(item.getThumbnail());
+        ((NormalViewHolder) viewHolder).videoThumbnailIv.setBitmap(item.getThumbnail());
         ((NormalViewHolder) viewHolder).videoLl.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -123,14 +124,14 @@ public class VideoAdapter extends BaseRecyclerAdapter {
     //自定义的ViewHolder，持有每个Item的的所有界面元素
     public static class NormalViewHolder extends RecyclerView.ViewHolder {
         public View videoLl;
-        public ImageView videoThumbnailIv;
+        public WrapHeightImageView videoThumbnailIv;
         public TextView durationTv;
         public TextView titleTv;
 
         public NormalViewHolder(View view) {
             super(view);
             videoLl = (View) view.findViewById(R.id.video_ll);
-            videoThumbnailIv = (ImageView) view.findViewById(R.id.video_thumbnail_iv);
+            videoThumbnailIv = (WrapHeightImageView) view.findViewById(R.id.video_thumbnail_iv);
             durationTv = (TextView) view.findViewById(R.id.duration_tv);
             titleTv = (TextView) view.findViewById(R.id.title_tv);
         }

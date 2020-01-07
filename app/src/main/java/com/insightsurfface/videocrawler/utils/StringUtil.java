@@ -162,7 +162,7 @@ public class StringUtil {
        if (second<0){
            return "";
        }else if (second<60){
-            return "00:"+second;
+            return "00:"+NumberUtil.toDoubleNum(second);
         }else if (second<3600){
             minute=(int)(second/60f);
             second=second%60;

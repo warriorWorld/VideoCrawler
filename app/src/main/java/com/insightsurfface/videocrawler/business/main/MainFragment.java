@@ -73,12 +73,7 @@ public class MainFragment extends BaseRefreshListFragment {
 
             @Override
             public void onRightClick() {
-                if (FastClickUtil.isNotFastClick()) {
-//                showFileChooser();
-                    Intent intent = new Intent(getActivity(), FileChooseActivity.class);
-                    //必须使用 getActivity().startActivityForResult 否则requestCode无法对应
-                    getActivity().startActivityForResult(intent, 2);
-                }
+                toFileChooserActivity();
             }
 
             @Override
@@ -87,6 +82,15 @@ public class MainFragment extends BaseRefreshListFragment {
                 startActivity(intent);
             }
         });
+    }
+
+    private void toFileChooserActivity() {
+        if (FastClickUtil.isNotFastClick()) {
+//                showFileChooser();
+            Intent intent = new Intent(getActivity(), FileChooseActivity.class);
+            //必须使用 getActivity().startActivityForResult 否则requestCode无法对应
+            getActivity().startActivityForResult(intent, 2);
+        }
     }
 
     /**
@@ -110,7 +114,7 @@ public class MainFragment extends BaseRefreshListFragment {
             @Override
             public void run() {
                 for (VideoBean item : list) {
-                    db.insertVideoTableTb(getActivity(), item.getPath(),item.getTitle(), item.getDuration(), 0);
+                    db.insertVideoTableTb(getActivity(), item.getPath(), item.getTitle(), item.getDuration(), 0);
                 }
                 SingleLoadBarUtil.getInstance().dismissLoadBar();
                 mHandler.sendEmptyMessage(UPDATE_LIST);
@@ -243,7 +247,8 @@ public class MainFragment extends BaseRefreshListFragment {
                 mAdapter.setOnEmptyBtnClick(new OnEmptyBtnClick() {
                     @Override
                     public void onClick() {
-                        showFileChooser();
+//                        showFileChooser();
+                        toFileChooserActivity();
                     }
                 });
                 refreshRcv.setAdapter(mAdapter);
