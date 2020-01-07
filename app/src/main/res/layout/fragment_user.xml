@@ -200,6 +200,41 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/fullscreen_rl"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="12dp"
+        android:background="@drawable/rect_white_c5"
+        android:elevation="1dp">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:src="@drawable/ic_keyboard" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="60dp"
+            android:text="自动全屏"
+            android:textColor="@color/main_text_color"
+            android:textSize="17sp" />
+
+        <CheckBox
+            android:id="@+id/fullscreen_cb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"></CheckBox>
+    </RelativeLayout>
+
+    <RelativeLayout
         android:id="@+id/shelter_rl"
         android:layout_width="match_parent"
         android:layout_height="54dp"

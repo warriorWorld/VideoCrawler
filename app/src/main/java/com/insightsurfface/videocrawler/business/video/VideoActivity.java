@@ -126,6 +126,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private ImageView backIv, forwardIv, centerPlayIv;
     private int jumpGap, shelterHeight;
     private Group controlGroup, centerControlGroup;
+    private boolean userBannedShelter = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -493,7 +494,9 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
             shelterLp.height = DisplayUtil.dip2px(this, 30);
         } else if (shelterHeight == 0) {
             //用户不需要这个功能
-            shelterLp.height = 0;
+//            shelterLp.height = 0;
+            userBannedShelter = true;
+            setShelterVisible(false);
         } else {
             //用户设置了具体值
             shelterLp.height = DisplayUtil.dip2px(this, shelterHeight);
@@ -522,7 +525,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     }
 
     private void setShelterVisible(boolean show) {
-        if (show) {
+        if (show&&!userBannedShelter) {
             shelterDv.setVisibility(View.VISIBLE);
         } else {
             shelterDv.setVisibility(View.GONE);
