@@ -7,6 +7,8 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.text.ClipboardManager;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -72,6 +74,8 @@ public class WordsActivity extends BaseRefreshListActivity implements SensorEven
         topBar = (RelativeLayout) findViewById(R.id.top_bar);
         topBarLeft = (TextView) findViewById(R.id.top_bar_left);
         topBarRight = (TextView) findViewById(R.id.top_bar_right);
+        LayoutAnimationController controller = new LayoutAnimationController(AnimationUtils.loadAnimation(this, R.anim.recycler_load));
+        refreshRcv.setLayoutAnimation(controller);
         baseTopBar.setTitle("生词本");
         hideBaseTopBar();
     }
