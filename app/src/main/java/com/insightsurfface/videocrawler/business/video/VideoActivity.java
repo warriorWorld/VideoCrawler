@@ -53,6 +53,7 @@ import com.insightsurfface.videocrawler.widget.dragview.ShelterView;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 import androidx.annotation.NonNull;
@@ -304,6 +305,15 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         mPlayer.setDisplay(holder);
         if (!isPrepared) {
             mPlayer.prepareAsync();
+        }else if(!mPlayer.isPlaying()){
+            mPlayer.reset();
+            try {
+                mPlayer.setDataSource(this, Uri.parse(url));
+                mPlayer.prepare();
+                mPlayer.seekTo(lastPauseLocation);
+            }catch (IOException e){
+                e.printStackTrace();
+            }
         }
         //为了让暂停不至于黑屏
         mPlayer.seekTo(mPlayer.getCurrentPosition());
@@ -416,6 +426,8 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         Logger.d("surfaceDestroyed");
+        lastPauseLocation=mPlayer.getCurrentPosition();
+        mPlayer.stop();
     }
 
     @Override
