@@ -29,7 +29,7 @@ public class WrapHeightImageView extends ImageView {
                         public void run() {
                             ViewGroup.LayoutParams vgl = getLayoutParams();
                             if (mBitmap == null) {
-                                setImageResource(R.drawable.ic_loading);
+//                                setImageResource(R.drawable.ic_loading);
                                 return;
                             }
                             //获取bitmap的宽度

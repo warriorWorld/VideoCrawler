@@ -27,6 +27,7 @@ import com.insightsurface.lib.widget.dialog.NormalDialog;
 import com.insightsurfface.stylelibrary.dialog.EditDialog;
 import com.insightsurfface.stylelibrary.listener.OnEditResultListener;
 import com.insightsurfface.videocrawler.R;
+import com.insightsurfface.videocrawler.business.words.WordsActivity;
 import com.insightsurfface.videocrawler.config.Configure;
 import com.insightsurfface.videocrawler.config.ShareKeys;
 
@@ -337,6 +338,9 @@ public class UserFragment extends BaseFragment implements View.OnClickListener,
     public void onClick(View v) {
         Intent intent = null;
         switch (v.getId()) {
+            case R.id.words_rl:
+                intent = new Intent(getActivity(), WordsActivity.class);
+                break;
             case R.id.share_rl:
                 showShareDialog();
                 break;

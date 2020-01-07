@@ -44,7 +44,8 @@ public class DbAdapter {
     /**
      * 插入一条生词信息
      */
-    public void insertWordsBookTb(String word) {
+    public void insertWordsBookTb(Context context, String word, String translate,Bitmap bp) {
+        ShareObjUtil.saveObject(context, BitmapUtils.bitmapToString(bp), word + ShareKeys.WORD_BITMAP);
         int time = queryQueryedTime(word);
         if (time > 0) {
             //如果查过这个单词 那就update 并且time+1
@@ -52,8 +53,8 @@ public class DbAdapter {
             updateTimeTOWordsBook(word, time);
         } else {
             db.execSQL(
-                    "insert into WordsBook (word,time) values (?,?)",
-                    new Object[]{word, 1});
+                    "insert into WordsBook (word,time,translate) values (?,?,?)",
+                    new Object[]{word, 1, translate});
         }
     }
 
@@ -112,18 +113,22 @@ public class DbAdapter {
      *
      * @return
      */
-    public ArrayList<WordsBookBean> queryAllWordsBook() {
+    public ArrayList<WordsBookBean> queryAllWordsBook(Context context) {
         ArrayList<WordsBookBean> resBeans = new ArrayList<WordsBookBean>();
         Cursor cursor = db
                 .query("WordsBook", null, null, null, null, null, "createdtime desc");
 
         while (cursor.moveToNext()) {
             String word = cursor.getString(cursor.getColumnIndex("word"));
+            String translate = cursor.getString(cursor.getColumnIndex("translate"));
             int time = cursor
                     .getInt(cursor.getColumnIndex("time"));
+            Bitmap bp = BitmapUtil.stringToBitmap((String) ShareObjUtil.getObject(context, word + ShareKeys.WORD_BITMAP));
             WordsBookBean item = new WordsBookBean();
             item.setWord(word);
             item.setTime(time);
+            item.setTranslate(translate);
+            item.setWordBp(bp);
             resBeans.add(item);
         }
         cursor.close();
@@ -204,9 +209,10 @@ public class DbAdapter {
     /**
      * 删除生词
      */
-    public void deleteWordByWord(String word) {
+    public void deleteWordByWord(Context context,String word) {
         db.execSQL("delete from WordsBook where word=?",
                 new Object[]{word});
+        ShareObjUtil.deleteFile(context, word + ShareKeys.WORD_BITMAP);
     }
 
     public void closeDb() {

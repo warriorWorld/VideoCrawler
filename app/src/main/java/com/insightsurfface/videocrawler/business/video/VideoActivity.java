@@ -37,6 +37,7 @@ import com.insightsurfface.videocrawler.base.BaseActivity;
 import com.insightsurfface.videocrawler.bean.YoudaoResponse;
 import com.insightsurfface.videocrawler.config.Configure;
 import com.insightsurfface.videocrawler.config.ShareKeys;
+import com.insightsurfface.videocrawler.db.DbAdapter;
 import com.insightsurfface.videocrawler.listener.OnEditResultListener;
 import com.insightsurfface.videocrawler.utils.DisplayUtil;
 import com.insightsurfface.videocrawler.utils.FastClickUtil;
@@ -53,6 +54,7 @@ import com.insightsurfface.videocrawler.widget.dragview.ShelterView;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -129,6 +131,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private Group controlGroup, centerControlGroup;
     private boolean userBannedShelter = false;
     private boolean isPrepared = false;
+    private DbAdapter db;//数据库
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,6 +145,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         jumpGap = SharedPreferencesUtils.getIntSharedPreferencesData(this, ShareKeys.JUMP_FRAME_GAP, -1);
         shelterHeight = SharedPreferencesUtils.getIntSharedPreferencesData(this, ShareKeys.SHELTER_HEIGHT, -1);
         super.onCreate(savedInstanceState);
+        db = new DbAdapter(this);
         clip = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         screenWidth = DisplayUtil.getScreenWidth(this);
         screenHeight = DisplayUtil.getScreenRealHeight(this);
@@ -305,13 +309,13 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         mPlayer.setDisplay(holder);
         if (!isPrepared) {
             mPlayer.prepareAsync();
-        }else if(!mPlayer.isPlaying()){
+        } else if (!mPlayer.isPlaying()) {
             mPlayer.reset();
             try {
                 mPlayer.setDataSource(this, Uri.parse(url));
                 mPlayer.prepare();
                 mPlayer.seekTo(lastPauseLocation);
-            }catch (IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -372,6 +376,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
             saveState();
             mPlayer.release();
         }
+        db.closeDb();
     }
 
     private void playStart() {
@@ -426,7 +431,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         Logger.d("surfaceDestroyed");
-        lastPauseLocation=mPlayer.getCurrentPosition();
+        lastPauseLocation = mPlayer.getCurrentPosition();
         mPlayer.stop();
     }
 
@@ -449,7 +454,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        isPrepared=true;
+        isPrepared = true;
         duration = (int) (mPlayer.getDuration() / 1000f);
         progressSb.setMax(duration);
         titleTv.setText(title);
@@ -592,9 +597,8 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         }
     }
 
-    private void translateWord(final String word) {
+    private void translateWord(final String word,final Bitmap bp) {
 //        clip.setText(word);
-        //记录查过的单词
         if (SharedPreferencesUtils.getBooleanSharedPreferencesData(this, ShareKeys.CLOSE_TRANSLATE, false)) {
             //关闭自动翻译
             return;
@@ -612,7 +616,8 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                         for (int i = 0; i < item.getExplains().size(); i++) {
                             t = t + item.getExplains().get(i) + ";";
                         }
-
+                        //记录查过的单词 本地翻译关不了 完全可以把释义也加进去
+                        db.insertWordsBookTb(VideoActivity.this,word, "[" + item.getPhonetic() + "]: " + t,bp);
                         showTranslateResultDialog(word, result.getQuery() + "  [" + item.getPhonetic() + "]: " + "\n" + t);
                     } else {
                         baseToast.showToast("没查到该词");
@@ -658,34 +663,13 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         translateResultDialog.setCancelable(true);
     }
 
-    private void showSearchDialog() {
-        playPause();
-        if (null == searchDialog) {
-            searchDialog = new OnlyEditDialog(this);
-            searchDialog.setOnEditResultListener(new OnEditResultListener() {
-                @Override
-                public void onResult(String text) {
-                    translateWord(text);
-                }
-
-                @Override
-                public void onCancelClick() {
-
-                }
-            });
-            searchDialog.setCancelable(true);
-        }
-        searchDialog.show();
-        searchDialog.clearEdit();
-    }
-
     private void showImgLandscapeKeyBoardDialog(final Bitmap bp) {
         ImgLandsacpeKeyboardDialog dialog = new ImgLandsacpeKeyboardDialog(this);
         dialog.setKeyBorad26Listener(new English26KeyBoardView.KeyBorad26Listener() {
             @Override
             public void inputFinish(String s) {
                 bp.recycle();
-                translateWord(s);
+                translateWord(s,bp);
             }
 
             @Override

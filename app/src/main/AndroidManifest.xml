@@ -37,6 +37,7 @@
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"></activity>
         <activity android:name=".business.filechoose.FileChooseActivity"></activity>
+        <activity android:name=".business.words.WordsActivity"></activity>
     </application>
 
 </manifest>

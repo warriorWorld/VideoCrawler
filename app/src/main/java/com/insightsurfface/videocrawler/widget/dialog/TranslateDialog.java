@@ -49,7 +49,7 @@ public class TranslateDialog extends Dialog implements View.OnClickListener {
         WindowManager wm = ((Activity) context).getWindowManager();
         Display d = wm.getDefaultDisplay();
         // lp.height = (int) (d.getHeight() * 0.4);
-        lp.width = (int) (d.getWidth() * 1);
+//        lp.width = (int) (d.getWidth() * 1);
         // window.setGravity(Gravity.LEFT | Gravity.TOP);
         window.setGravity(Gravity.CENTER);
 //        window.getDecorView().setPadding(0, 0, 0, 0);
