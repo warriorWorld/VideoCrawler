@@ -17,7 +17,6 @@ import com.insightsurface.lib.utils.VibratorUtil;
 import com.insightsurfface.videocrawler.R;
 import com.insightsurfface.videocrawler.adapter.WordsAdapter;
 import com.insightsurfface.videocrawler.bean.WordsBookBean;
-import com.insightsurfface.videocrawler.config.Configure;
 import com.insightsurfface.videocrawler.db.DbAdapter;
 
 import java.util.ArrayList;
@@ -32,6 +31,7 @@ public class WordsActivity extends BaseRefreshListActivity implements SensorEven
     private ClipboardManager clip;//复制文本用
     private SensorManager sManager;
     private Sensor mSensorAccelerometer;
+    private int currentOrientation=-1;
 
     @Override
     protected void onCreateInit() {
@@ -126,18 +126,19 @@ public class WordsActivity extends BaseRefreshListActivity implements SensorEven
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            if (isPortrait()) {
-                return;
-            }
             try {
                 float gyroscope_x = event.values[0];
+                float gyroscope_y = event.values[1];
 
-//                readProgressTv.setText(gyroscope_x + "\n" + gyroscope_y + "\n" + gyroscope_z);
-                if (gyroscope_x >= 8 && Configure.currentOrientation != 90) {
-                    Configure.currentOrientation = 90;
+//                topBarRight.setText(gyroscope_x + "；" + event.values[1] + "；" + event.values[2]);
+                if (Math.abs(gyroscope_x) <= 3 && gyroscope_y > 0 && currentOrientation != 0) {
+                    currentOrientation = 0;
+                    setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                } else if (gyroscope_x >= 8 && currentOrientation != 90) {
+                    currentOrientation = 90;
                     setOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                } else if (gyroscope_x <= -8 && Configure.currentOrientation != 270) {
-                    Configure.currentOrientation = 270;
+                } else if (gyroscope_x <= -8 && currentOrientation != 270) {
+                    currentOrientation = 270;
                     setOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
                 }
             } catch (Exception e) {
