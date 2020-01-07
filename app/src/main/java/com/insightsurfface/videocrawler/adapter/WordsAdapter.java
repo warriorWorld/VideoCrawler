@@ -81,6 +81,15 @@ public class WordsAdapter extends BaseRecyclerAdapter {
                 ((NormalViewHolder) viewHolder).translateTv.setTextColor(context.getResources().getColor(R.color.main_text_color_gray));
             }
         });
+        ((NormalViewHolder) viewHolder).translateTv.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (null != mOnRecycleItemLongClickListener) {
+                    mOnRecycleItemLongClickListener.onItemLongClick(position);
+                }
+                return true;
+            }
+        });
         ((NormalViewHolder) viewHolder).wordIv.setBitmap(item.getWordBp());
         ((NormalViewHolder) viewHolder).killTv.setOnClickListener(new View.OnClickListener() {
             @Override

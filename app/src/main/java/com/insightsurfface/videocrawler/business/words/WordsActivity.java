@@ -1,14 +1,19 @@
 package com.insightsurfface.videocrawler.business.words;
 
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.text.ClipboardManager;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.insightsurface.lib.base.BaseRefreshListActivity;
 import com.insightsurface.lib.listener.OnRecycleItemClickListener;
+import com.insightsurface.lib.listener.OnRecycleItemLongClickListener;
+import com.insightsurface.lib.utils.VibratorUtil;
 import com.insightsurfface.videocrawler.R;
 import com.insightsurfface.videocrawler.adapter.WordsAdapter;
 import com.insightsurfface.videocrawler.bean.WordsBookBean;
@@ -24,10 +29,32 @@ public class WordsActivity extends BaseRefreshListActivity implements SensorEven
     private RelativeLayout topBar;
     private TextView topBarLeft;
     private TextView topBarRight;
+    private ClipboardManager clip;//复制文本用
+    private SensorManager sManager;
+    private Sensor mSensorAccelerometer;
 
     @Override
     protected void onCreateInit() {
         db = new DbAdapter(this);
+        clip = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        initSensorManager();
+    }
+
+    private void initSensorManager() {
+        sManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        mSensorAccelerometer = sManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sManager.unregisterListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sManager.registerListener(this, mSensorAccelerometer, SensorManager.SENSOR_DELAY_UI);
     }
 
     @Override
@@ -61,8 +88,15 @@ public class WordsActivity extends BaseRefreshListActivity implements SensorEven
                 mAdapter.setOnRecycleItemClickListener(new OnRecycleItemClickListener() {
                     @Override
                     public void onItemClick(int position) {
+                        VibratorUtil.Vibrate(WordsActivity.this, 60);
                         db.deleteWordByWord(WordsActivity.this, wordsList.get(position).getWord());
                         doGetData();
+                    }
+                });
+                mAdapter.setOnRecycleItemLongClickListener(new OnRecycleItemLongClickListener() {
+                    @Override
+                    public void onItemLongClick(int position) {
+                        clip.setText(wordsList.get(position).getWord());
                     }
                 });
                 refreshRcv.setAdapter(mAdapter);
@@ -81,9 +115,7 @@ public class WordsActivity extends BaseRefreshListActivity implements SensorEven
     }
 
     private void setOrientation(int orientation) {
-        if (orientation != getOrientation()) {
-            setRequestedOrientation(orientation);
-        }
+        setRequestedOrientation(orientation);
     }
 
     // 判断当前屏幕朝向是否为竖屏
