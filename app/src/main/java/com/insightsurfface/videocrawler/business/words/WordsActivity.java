@@ -18,6 +18,7 @@ import com.insightsurfface.videocrawler.R;
 import com.insightsurfface.videocrawler.adapter.WordsAdapter;
 import com.insightsurfface.videocrawler.bean.WordsBookBean;
 import com.insightsurfface.videocrawler.db.DbAdapter;
+import com.insightsurfface.videocrawler.utils.DisplayUtil;
 
 import java.util.ArrayList;
 
@@ -31,12 +32,15 @@ public class WordsActivity extends BaseRefreshListActivity implements SensorEven
     private ClipboardManager clip;//复制文本用
     private SensorManager sManager;
     private Sensor mSensorAccelerometer;
-    private int currentOrientation=-1;
+    private int currentOrientation = -1;
+    private int screenWidth, screenHeight;
 
     @Override
     protected void onCreateInit() {
         db = new DbAdapter(this);
         clip = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        screenWidth = DisplayUtil.getScreenRealWidth(this);
+        screenHeight = DisplayUtil.getScreenRealHeight(this);
         initSensorManager();
     }
 
@@ -90,7 +94,7 @@ public class WordsActivity extends BaseRefreshListActivity implements SensorEven
                     public void onItemClick(int position) {
                         VibratorUtil.Vibrate(WordsActivity.this, 60);
                         db.deleteWordByWord(WordsActivity.this, wordsList.get(position).getWord());
-                        doGetData();
+                        mAdapter.remove(position);
                     }
                 });
                 mAdapter.setOnRecycleItemLongClickListener(new OnRecycleItemLongClickListener() {
@@ -103,6 +107,11 @@ public class WordsActivity extends BaseRefreshListActivity implements SensorEven
             } else {
                 mAdapter.setList(wordsList);
                 mAdapter.notifyDataSetChanged();
+            }
+            if (isPortrait()) {
+                mAdapter.setCurrentWidth(screenWidth);
+            } else {
+                mAdapter.setCurrentWidth(screenHeight);
             }
         } catch (Exception e) {
             noMoreData();
@@ -131,15 +140,24 @@ public class WordsActivity extends BaseRefreshListActivity implements SensorEven
                 float gyroscope_y = event.values[1];
 
 //                topBarRight.setText(gyroscope_x + "；" + event.values[1] + "；" + event.values[2]);
-                if (Math.abs(gyroscope_x) <= 3 && gyroscope_y > 0 && currentOrientation != 0) {
+                if (Math.abs(gyroscope_x) <= 2 && gyroscope_y > 0 && currentOrientation != 0) {
                     currentOrientation = 0;
                     setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                    if (null != mAdapter) {
+                        mAdapter.setCurrentWidth(screenWidth);
+                    }
                 } else if (gyroscope_x >= 8 && currentOrientation != 90) {
                     currentOrientation = 90;
                     setOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                    if (null != mAdapter) {
+                        mAdapter.setCurrentWidth(screenHeight);
+                    }
                 } else if (gyroscope_x <= -8 && currentOrientation != 270) {
                     currentOrientation = 270;
                     setOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+                    if (null != mAdapter) {
+                        mAdapter.setCurrentWidth(screenHeight);
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();

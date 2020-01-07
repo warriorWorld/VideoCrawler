@@ -41,7 +41,7 @@
         <activity
             android:name=".business.words.WordsActivity"
             android:configChanges="orientation|screenSize"
-            android:screenOrientation="landscape"></activity>
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

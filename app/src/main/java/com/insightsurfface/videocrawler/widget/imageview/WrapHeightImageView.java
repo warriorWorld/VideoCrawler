@@ -70,7 +70,11 @@ public class WrapHeightImageView extends ImageView {
         init(context);
     }
 
-    public void setBitmap(final Bitmap bm) {
+    public void setBitmap(Bitmap bitmap) {
+        setBitmap(bitmap, 0);
+    }
+
+    public void setBitmap(final Bitmap bm, final int targetWidth) {
         post(new Runnable() {
             @Override
             public void run() {
@@ -87,8 +91,13 @@ public class WrapHeightImageView extends ImageView {
                 //计算出图片的宽高比，然后按照图片的比列去缩放图片
                 float bitScalew = bitWidth / bithight;
                 // 高按照比例计算
-                vgl.width = (int) getMeasuredWidth();
-                vgl.height = (int) (getMeasuredWidth() / bitScalew);
+                if (targetWidth == 0) {
+                    vgl.width = (int) getMeasuredWidth();
+                    vgl.height = (int) (getMeasuredWidth() / bitScalew);
+                } else {
+                    vgl.width = (int) targetWidth;
+                    vgl.height = (int) (targetWidth / bitScalew);
+                }
                 //设置图片充满ImageView控件
                 setScaleType(ScaleType.FIT_XY);
                 //等比例缩放

@@ -30,6 +30,7 @@ public class WordsAdapter extends BaseRecyclerAdapter {
     private ArrayList<WordsBookBean> list = null;
     private OnRecycleItemClickListener onRecycleItemClickListener;
     private OnRecycleItemLongClickListener mOnRecycleItemLongClickListener;
+    private int currentWidth = 0;
 
     public WordsAdapter(Context context) {
         super(context);
@@ -90,7 +91,7 @@ public class WordsAdapter extends BaseRecyclerAdapter {
                 return true;
             }
         });
-        ((NormalViewHolder) viewHolder).wordIv.setBitmap(item.getWordBp());
+        ((NormalViewHolder) viewHolder).wordIv.setBitmap(item.getWordBp(), currentWidth);
         ((NormalViewHolder) viewHolder).killTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,6 +116,26 @@ public class WordsAdapter extends BaseRecyclerAdapter {
 
     public void setOnRecycleItemLongClickListener(OnRecycleItemLongClickListener onRecycleItemLongClickListener) {
         mOnRecycleItemLongClickListener = onRecycleItemLongClickListener;
+    }
+
+    public void setCurrentWidth(int currentWidth) {
+        this.currentWidth = currentWidth;
+    }
+
+    public void remove(int position) {
+        list.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public void add(int position, WordsBookBean data) {
+        list.add(position, data);
+        notifyItemInserted(position);
+    }
+
+    public void change(int position, WordsBookBean data) {
+        list.remove(position);
+        list.add(position, data);
+        notifyItemChanged(position);
     }
 
     //自定义的ViewHolder，持有每个Item的的所有界面元素
