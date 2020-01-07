@@ -668,7 +668,6 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         dialog.setKeyBorad26Listener(new English26KeyBoardView.KeyBorad26Listener() {
             @Override
             public void inputFinish(String s) {
-                bp.recycle();
                 translateWord(s,bp);
             }
 

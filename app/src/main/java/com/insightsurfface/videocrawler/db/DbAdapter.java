@@ -46,6 +46,7 @@ public class DbAdapter {
      */
     public void insertWordsBookTb(Context context, String word, String translate,Bitmap bp) {
         ShareObjUtil.saveObject(context, BitmapUtils.bitmapToString(bp), word + ShareKeys.WORD_BITMAP);
+        bp.recycle();
         int time = queryQueryedTime(word);
         if (time > 0) {
             //如果查过这个单词 那就update 并且time+1
