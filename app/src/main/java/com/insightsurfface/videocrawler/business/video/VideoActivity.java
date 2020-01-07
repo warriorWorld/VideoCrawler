@@ -127,6 +127,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private int jumpGap, shelterHeight;
     private Group controlGroup, centerControlGroup;
     private boolean userBannedShelter = false;
+    private boolean isPrepared = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -300,7 +301,9 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     public void surfaceCreated(SurfaceHolder holder) {
         mSurfaceHolder = holder;
         mPlayer.setDisplay(holder);
-        mPlayer.prepareAsync();
+        if (!isPrepared) {
+            mPlayer.prepareAsync();
+        }
         //为了让暂停不至于黑屏
         mPlayer.seekTo(mPlayer.getCurrentPosition());
     }
@@ -433,6 +436,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
 
     @Override
     public void onPrepared(MediaPlayer mp) {
+        isPrepared=true;
         duration = (int) (mPlayer.getDuration() / 1000f);
         progressSb.setMax(duration);
         titleTv.setText(title);
@@ -443,7 +447,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (videoWidth>videoHeight) {
+                        if (videoWidth > videoHeight) {
                             setOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                         }
                         playStart();
@@ -527,7 +531,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     }
 
     private void setShelterVisible(boolean show) {
-        if (show&&!userBannedShelter) {
+        if (show && !userBannedShelter) {
             shelterDv.setVisibility(View.VISIBLE);
         } else {
             shelterDv.setVisibility(View.GONE);
