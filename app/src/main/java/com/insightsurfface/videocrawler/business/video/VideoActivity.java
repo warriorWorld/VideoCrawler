@@ -304,7 +304,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         sppeedTv75 = (TextView) findViewById(R.id.sppeed_tv75);
         sppeedTv50 = (TextView) findViewById(R.id.sppeed_tv50);
         speedCl = findViewById(R.id.speed_cl);
-        speedCl.setVisibility(View.GONE);
+        setSpeedClVisible(false);
 
         playSpeedTv.setOnClickListener(this);
         sppeedTv200.setOnClickListener(this);
@@ -335,6 +335,15 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         mSurfaceHolder = holder;
         mPlayer.setDisplay(holder);
         if (!isPrepared) {
+            String speedS = SharedPreferencesUtils.getSharedPreferencesData(this, ShareKeys.VIDEO_SPEED);
+            if (!TextUtils.isEmpty(speedS)) {
+                try {
+                    float speed = Float.valueOf(speedS);
+                    changeplayerSpeed(speed);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
             mPlayer.prepareAsync();
         } else if (!mPlayer.isPlaying()) {
             mPlayer.reset();
@@ -412,6 +421,10 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         }
         mPlayer.setDisplay(mSurfaceHolder);
         mPlayer.start();
+        turnToStartUI();
+    }
+
+    private void turnToStartUI() {
         playIv.setImageResource(R.drawable.ic_pause);
         centerPlayIv.setImageResource(R.drawable.ic_pause_white);
         if (!controlGroup.isShown()) {
@@ -596,12 +609,37 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private void changeplayerSpeed(float speed) {
         // this checks on API 23 and up
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (mPlayer.isPlaying()) {
-                mPlayer.setPlaybackParams(mPlayer.getPlaybackParams().setSpeed(speed));
-            } else {
-                mPlayer.setPlaybackParams(mPlayer.getPlaybackParams().setSpeed(speed));
-                mPlayer.pause();
+//            if (mPlayer.isPlaying()) {
+            mPlayer.setPlaybackParams(mPlayer.getPlaybackParams().setSpeed(speed));
+//            } else {
+//                mPlayer.setPlaybackParams(mPlayer.getPlaybackParams().setSpeed(speed));
+//                mPlayer.pause();
+//            }
+            setSpeedClVisible(false);
+            sppeedTv50.setTextColor(getResources().getColor(R.color.white));
+            sppeedTv75.setTextColor(getResources().getColor(R.color.white));
+            sppeedTv100.setTextColor(getResources().getColor(R.color.white));
+            sppeedTv125.setTextColor(getResources().getColor(R.color.white));
+            sppeedTv175.setTextColor(getResources().getColor(R.color.white));
+            sppeedTv200.setTextColor(getResources().getColor(R.color.white));
+            sppeedTv150.setTextColor(getResources().getColor(R.color.white));
+            if (Float.compare(speed, 0.5f) == 0) {
+                sppeedTv50.setTextColor(getResources().getColor(R.color.colorPrimary));
+            } else if (Float.compare(speed, 0.75f) == 0) {
+                sppeedTv75.setTextColor(getResources().getColor(R.color.colorPrimary));
+            } else if (Float.compare(speed, 1f) == 0) {
+                sppeedTv100.setTextColor(getResources().getColor(R.color.colorPrimary));
+            } else if (Float.compare(speed, 1.25f) == 0) {
+                sppeedTv125.setTextColor(getResources().getColor(R.color.colorPrimary));
+            } else if (Float.compare(speed, 1.5f) == 0) {
+                sppeedTv150.setTextColor(getResources().getColor(R.color.colorPrimary));
+            } else if (Float.compare(speed, 1.75f) == 0) {
+                sppeedTv175.setTextColor(getResources().getColor(R.color.colorPrimary));
+            } else if (Float.compare(speed, 2f) == 0) {
+                sppeedTv200.setTextColor(getResources().getColor(R.color.colorPrimary));
             }
+            turnToStartUI();
+            SharedPreferencesUtils.setSharedPreferencesData(this, ShareKeys.VIDEO_SPEED, speed + "");
         }
     }
 
@@ -637,6 +675,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         }
         mHandler.removeMessages(UPDATE_TIME);
         controlGroup.setVisibility(View.GONE);
+        setSpeedClVisible(false);
         try {
             if (null != mPlayer && mPlayer.isPlaying()) {
                 centerControlGroup.setVisibility(View.GONE);
@@ -729,15 +768,19 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         dialog.setImgRes(bp);
     }
 
+    private void setSpeedClVisible(boolean visible) {
+        if (visible) {
+            speedCl.setVisibility(View.VISIBLE);
+        } else {
+            speedCl.setVisibility(View.GONE);
+        }
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.play_speed_tv:
-                if (speedCl.isShown()) {
-                    speedCl.setVisibility(View.GONE);
-                } else {
-                    speedCl.setVisibility(View.VISIBLE);
-                }
+                setSpeedClVisible(!speedCl.isShown());
                 break;
             case R.id.sppeed_tv50:
                 changeplayerSpeed(0.5f);
@@ -784,9 +827,6 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                     hideControl();
                 } else {
                     showControl();
-                }
-                if (speedCl.isShown()) {
-                    speedCl.setVisibility(View.GONE);
                 }
                 if (mPlayer.isPlaying()) {
                     playPause();
