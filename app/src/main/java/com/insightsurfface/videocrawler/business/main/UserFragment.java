@@ -24,12 +24,12 @@ import com.insightsurface.lib.utils.NumberUtil;
 import com.insightsurface.lib.utils.SharedPreferencesUtils;
 import com.insightsurface.lib.widget.dialog.DownloadDialog;
 import com.insightsurface.lib.widget.dialog.NormalDialog;
-import com.insightsurfface.stylelibrary.dialog.EditDialog;
 import com.insightsurfface.stylelibrary.listener.OnEditResultListener;
 import com.insightsurfface.videocrawler.R;
 import com.insightsurfface.videocrawler.business.words.WordsActivity;
 import com.insightsurfface.videocrawler.config.Configure;
 import com.insightsurfface.videocrawler.config.ShareKeys;
+import com.insightsurfface.videocrawler.widget.dialog.VideoEditDialog;
 
 import net.tsz.afinal.FinalHttp;
 import net.tsz.afinal.http.AjaxCallBack;
@@ -265,7 +265,7 @@ public class UserFragment extends BaseFragment implements View.OnClickListener,
     }
 
     private void showShelterOptionDialog() {
-        EditDialog dialog = new EditDialog(getActivity());
+        VideoEditDialog dialog = new VideoEditDialog(getActivity());
         dialog.setOnEditResultListener(new OnEditResultListener() {
             @Override
             public void onResult(String text) {
@@ -283,10 +283,14 @@ public class UserFragment extends BaseFragment implements View.OnClickListener,
         dialog.setTitle("遮挡高度设置");
         dialog.setHint("默认值为30dp 仅供参考");
         dialog.setMessage("请输入要设置的遮挡高度(单位：dp)，如需隐藏遮挡请输入0。");
+        int height = SharedPreferencesUtils.getIntSharedPreferencesData(getActivity(), ShareKeys.SHELTER_HEIGHT, -1);
+        if (height != -1) {
+            dialog.setEditText(height + "");
+        }
     }
 
     private void showJumpFrameOptionDialog() {
-        EditDialog dialog = new EditDialog(getActivity());
+        VideoEditDialog dialog = new VideoEditDialog(getActivity());
         dialog.setOnEditResultListener(new OnEditResultListener() {
             @Override
             public void onResult(String text) {
@@ -304,6 +308,10 @@ public class UserFragment extends BaseFragment implements View.OnClickListener,
         dialog.setTitle("跳帧间隔设置");
         dialog.setHint("默认值为5000毫秒 仅供参考");
         dialog.setMessage("请输入要设置的跳帧间隔(单位：毫秒 1秒=1000毫秒)，不需要请输入0。");
+        int duration = SharedPreferencesUtils.getIntSharedPreferencesData(getActivity(), ShareKeys.JUMP_FRAME_GAP, -1);
+        if (duration != -1) {
+            dialog.setEditText(duration + "");
+        }
     }
 
     private void showKeyboardSettingDialog() {
