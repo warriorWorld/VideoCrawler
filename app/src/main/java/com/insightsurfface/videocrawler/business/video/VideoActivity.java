@@ -335,15 +335,6 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         mSurfaceHolder = holder;
         mPlayer.setDisplay(holder);
         if (!isPrepared) {
-            String speedS = SharedPreferencesUtils.getSharedPreferencesData(this, ShareKeys.VIDEO_SPEED);
-            if (!TextUtils.isEmpty(speedS)) {
-                try {
-                    float speed = Float.valueOf(speedS);
-                    changeplayerSpeed(speed);
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            }
             mPlayer.prepareAsync();
         } else if (!mPlayer.isPlaying()) {
             mPlayer.reset();
@@ -508,6 +499,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                         if (videoWidth > videoHeight) {
                             setOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                         }
+                        recoverSpeed();
                         playStart();
                     }
                 });
@@ -596,6 +588,18 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         }
     }
 
+    private void recoverSpeed() {
+        String speedS = SharedPreferencesUtils.getSharedPreferencesData(this, ShareKeys.VIDEO_SPEED);
+        if (!TextUtils.isEmpty(speedS)) {
+            try {
+                float speed = Float.valueOf(speedS);
+                changeplayerSpeed(speed);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     /**
      * (1) 使用这个接口可以进行播放速率的设置。
      * (2) 播放器prepared状态之前调用这个方法不会更改播放器的状态。
@@ -609,12 +613,12 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private void changeplayerSpeed(float speed) {
         // this checks on API 23 and up
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            if (mPlayer.isPlaying()) {
-            mPlayer.setPlaybackParams(mPlayer.getPlaybackParams().setSpeed(speed));
-//            } else {
-//                mPlayer.setPlaybackParams(mPlayer.getPlaybackParams().setSpeed(speed));
-//                mPlayer.pause();
-//            }
+            if (mPlayer.isPlaying()) {
+                mPlayer.setPlaybackParams(mPlayer.getPlaybackParams().setSpeed(speed));
+            } else {
+                mPlayer.setPlaybackParams(mPlayer.getPlaybackParams().setSpeed(speed));
+                mPlayer.pause();
+            }
             setSpeedClVisible(false);
             sppeedTv50.setTextColor(getResources().getColor(R.color.white));
             sppeedTv75.setTextColor(getResources().getColor(R.color.white));
@@ -638,7 +642,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
             } else if (Float.compare(speed, 2f) == 0) {
                 sppeedTv200.setTextColor(getResources().getColor(R.color.colorPrimary));
             }
-            turnToStartUI();
+//            turnToStartUI();
             SharedPreferencesUtils.setSharedPreferencesData(this, ShareKeys.VIDEO_SPEED, speed + "");
         }
     }
