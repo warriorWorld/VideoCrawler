@@ -13,6 +13,7 @@ import com.insightsurface.lib.listener.OnRecycleItemClickListener;
 import com.insightsurface.lib.listener.OnRecycleItemLongClickListener;
 import com.insightsurfface.videocrawler.R;
 import com.insightsurfface.videocrawler.bean.VideoBean;
+import com.insightsurfface.videocrawler.bean.WordsBookBean;
 import com.insightsurfface.videocrawler.listener.OnEmptyBtnClick;
 import com.insightsurfface.videocrawler.utils.StringUtil;
 import com.insightsurfface.videocrawler.widget.imageview.WrapHeightImageView;
@@ -99,6 +100,26 @@ public class VideoAdapter extends BaseRecyclerAdapter {
                 return true;
             }
         });
+    }
+
+    public void remove(int position) {
+        list.remove(position);
+        notifyItemRemoved(position);
+        //必须让后边的刷新 因为上边那个notify是不会重新bindview的所以会使后边的view的position错误
+        notifyItemRangeChanged(position, list.size() - position);
+    }
+
+    public void add(int position, VideoBean data) {
+        list.add(position, data);
+        notifyItemInserted(position);
+        //必须让后边的刷新 因为上边那个notify是不会重新bindview的所以会使后边的view的position错误
+        notifyItemRangeChanged(position, list.size() - position);
+    }
+
+    public void change(int position, VideoBean data) {
+        list.remove(position);
+        list.add(position, data);
+        notifyItemChanged(position);
     }
 
     public void setList(ArrayList<VideoBean> list) {

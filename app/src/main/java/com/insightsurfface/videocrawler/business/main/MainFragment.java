@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 
 import com.insightsurface.lib.base.BaseRefreshListFragment;
 import com.insightsurface.lib.listener.OnDialogClickListener;
@@ -82,6 +84,8 @@ public class MainFragment extends BaseRefreshListFragment {
                 startActivity(intent);
             }
         });
+        LayoutAnimationController controller = new LayoutAnimationController(AnimationUtils.loadAnimation(getActivity(), R.anim.recycler_load));
+        refreshRcv.setLayoutAnimation(controller);
     }
 
     private void toFileChooserActivity() {
@@ -136,9 +140,9 @@ public class MainFragment extends BaseRefreshListFragment {
         }).start();
     }
 
-    public void deleteVideo(Context context, int id) {
-        db.deleteVideoById(context, id);
-        doGetData();
+    private void deleteVideo(int pos) {
+        db.deleteVideoById(getActivity(), videoList.get(pos).getId());
+        mAdapter.remove(pos);
     }
 
     @Override
@@ -174,17 +178,17 @@ public class MainFragment extends BaseRefreshListFragment {
         return null;
     }
 
-    private void showDeleteDialog(final int id, final String path) {
+    private void showDeleteDialog(final int pos) {
         NormalDialog dialog = new NormalDialog(getActivity());
         dialog.setOnDialogClickListener(new OnDialogClickListener() {
             @Override
             public void onOkClick() {
                 try {
-                    FileUtils.deleteFile(new File(path));
+                    FileUtils.deleteFile(new File(videoList.get(pos).getPath()));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                deleteVideo(getActivity(), id);
+                deleteVideo(pos);
             }
 
             @Override
@@ -214,10 +218,10 @@ public class MainFragment extends BaseRefreshListFragment {
             public void onItemClick(int position) {
                 switch (position) {
                     case 0:
-                        deleteVideo(getActivity(), videoList.get(deletePos).getId());
+                        deleteVideo(deletePos);
                         break;
                     case 1:
-                        showDeleteDialog(videoList.get(deletePos).getId(), videoList.get(deletePos).getPath());
+                        showDeleteDialog(deletePos);
                         break;
                 }
             }

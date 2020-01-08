@@ -125,11 +125,15 @@ public class WordsAdapter extends BaseRecyclerAdapter {
     public void remove(int position) {
         list.remove(position);
         notifyItemRemoved(position);
+        //必须让后边的刷新 因为上边那个notify是不会重新bindview的所以会使后边的view的position错误
+        notifyItemRangeChanged(position, list.size() - position);
     }
 
     public void add(int position, WordsBookBean data) {
         list.add(position, data);
         notifyItemInserted(position);
+        //必须让后边的刷新 因为上边那个notify是不会重新bindview的所以会使后边的view的position错误
+        notifyItemRangeChanged(position, list.size() - position);
     }
 
     public void change(int position, WordsBookBean data) {
