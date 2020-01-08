@@ -8,7 +8,7 @@
     <SurfaceView
         android:id="@+id/video_sv"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="300dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"></SurfaceView>
@@ -82,6 +82,7 @@
         app:layout_constraintLeft_toRightOf="@+id/center_play_iv"
         app:layout_constraintTop_toTopOf="@+id/video_sv"></ImageView>
 
+
     <RelativeLayout
         android:id="@+id/bottom_control_rl"
         android:layout_width="0dp"
@@ -119,15 +120,27 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
-            android:layout_toLeftOf="@+id/full_screen_iv"
+            android:layout_toLeftOf="@+id/play_speed_tv"
             android:text="00:00/30:00"
+            android:textColor="@color/white"
+            android:textSize="11sp"></TextView>
+
+        <TextView
+            android:id="@+id/play_speed_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@+id/full_screen_iv"
+            android:includeFontPadding="false"
+            android:text="倍速"
             android:textColor="@color/white"
             android:textSize="11sp"></TextView>
 
         <ImageView
             android:id="@+id/full_screen_iv"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="15dp"
@@ -154,11 +167,106 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"></ImageView>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/speed_cl"
+        android:layout_width="100dp"
+        android:layout_height="0dp"
+        android:background="@color/control_bg"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_control_rl"
+        app:layout_constraintRight_toRightOf="@+id/video_sv"
+        app:layout_constraintTop_toBottomOf="@+id/video_title_tv">
+
+        <TextView
+            android:id="@+id/sppeed_tv200"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2.0X"
+            android:textColor="@color/white"
+            android:textSize="17sp"
+            app:layout_constraintBottom_toTopOf="@+id/sppeed_tv175"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="spread"></TextView>
+
+        <TextView
+            android:id="@+id/sppeed_tv175"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1.75X"
+            android:textColor="@color/white"
+            android:textSize="17sp"
+            app:layout_constraintBottom_toTopOf="@+id/sppeed_tv150"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sppeed_tv200"></TextView>
+
+        <TextView
+            android:id="@+id/sppeed_tv150"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1.5X"
+            android:textColor="@color/white"
+            android:textSize="17sp"
+            app:layout_constraintBottom_toTopOf="@+id/sppeed_tv125"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sppeed_tv175"></TextView>
+
+        <TextView
+            android:id="@+id/sppeed_tv125"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1.25X"
+            android:textColor="@color/white"
+            android:textSize="17sp"
+            app:layout_constraintBottom_toTopOf="@+id/sppeed_tv100"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sppeed_tv150"></TextView>
+
+        <TextView
+            android:id="@+id/sppeed_tv100"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1.0X"
+            android:textColor="@color/colorPrimary"
+            android:textSize="17sp"
+            app:layout_constraintBottom_toTopOf="@+id/sppeed_tv75"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sppeed_tv125"></TextView>
+
+        <TextView
+            android:id="@+id/sppeed_tv75"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0.75X"
+            android:textColor="@color/white"
+            android:textSize="17sp"
+            app:layout_constraintBottom_toTopOf="@+id/sppeed_tv50"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sppeed_tv100"></TextView>
+
+        <TextView
+            android:id="@+id/sppeed_tv50"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0.5X"
+            android:textColor="@color/white"
+            android:textSize="17sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sppeed_tv75"></TextView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
     <!--解决surfaceView上方控件动画或拖动时的遮挡问题-->
     <View
         android:layout_width="match_parent"
-        android:background="@color/transparency"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:background="@color/transparency" />
+
     <com.insightsurfface.videocrawler.widget.dragview.ShelterView
         android:id="@+id/shelter_dv"
         android:layout_width="0dp"

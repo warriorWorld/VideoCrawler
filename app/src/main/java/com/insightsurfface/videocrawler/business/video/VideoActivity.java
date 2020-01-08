@@ -132,6 +132,15 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private boolean userBannedShelter = false;
     private boolean isPrepared = false;
     private DbAdapter db;//数据库
+    private TextView playSpeedTv;
+    private TextView sppeedTv200;
+    private TextView sppeedTv175;
+    private TextView sppeedTv150;
+    private TextView sppeedTv125;
+    private TextView sppeedTv100;
+    private TextView sppeedTv75;
+    private TextView sppeedTv50;
+    private View speedCl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -286,7 +295,25 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         backIv = findViewById(R.id.back_iv);
         forwardIv = findViewById(R.id.forward_iv);
         centerPlayIv = findViewById(R.id.center_play_iv);
+        playSpeedTv = (TextView) findViewById(R.id.play_speed_tv);
+        sppeedTv200 = (TextView) findViewById(R.id.sppeed_tv200);
+        sppeedTv175 = (TextView) findViewById(R.id.sppeed_tv175);
+        sppeedTv150 = (TextView) findViewById(R.id.sppeed_tv150);
+        sppeedTv125 = (TextView) findViewById(R.id.sppeed_tv125);
+        sppeedTv100 = (TextView) findViewById(R.id.sppeed_tv100);
+        sppeedTv75 = (TextView) findViewById(R.id.sppeed_tv75);
+        sppeedTv50 = (TextView) findViewById(R.id.sppeed_tv50);
+        speedCl = findViewById(R.id.speed_cl);
+        speedCl.setVisibility(View.GONE);
 
+        playSpeedTv.setOnClickListener(this);
+        sppeedTv200.setOnClickListener(this);
+        sppeedTv175.setOnClickListener(this);
+        sppeedTv150.setOnClickListener(this);
+        sppeedTv125.setOnClickListener(this);
+        sppeedTv100.setOnClickListener(this);
+        sppeedTv75.setOnClickListener(this);
+        sppeedTv50.setOnClickListener(this);
         centerPlayIv.setOnClickListener(this);
         backIv.setOnClickListener(this);
         forwardIv.setOnClickListener(this);
@@ -556,6 +583,28 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         }
     }
 
+    /**
+     * (1) 使用这个接口可以进行播放速率的设置。
+     * (2) 播放器prepared状态之前调用这个方法不会更改播放器的状态。
+     * (3) prepared状态之后设置速率0等同于调用pause()，当调用start恢复播放以后，将以原来的速率进行播放。
+     * (4) prepared状态之后设置非0的速率等同于调用start()。
+     * (5) 当播放器还未初始化或者已经被释放的时候设置会抛IllegalStateException的异常。
+     * (6) 当参数不支持的时候会抛IllegalArgumentException的异常。
+     *
+     * @param speed
+     */
+    private void changeplayerSpeed(float speed) {
+        // this checks on API 23 and up
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (mPlayer.isPlaying()) {
+                mPlayer.setPlaybackParams(mPlayer.getPlaybackParams().setSpeed(speed));
+            } else {
+                mPlayer.setPlaybackParams(mPlayer.getPlaybackParams().setSpeed(speed));
+                mPlayer.pause();
+            }
+        }
+    }
+
     @Override
     public void onBackPressed() {
 //        if (isPortrait()) {
@@ -597,7 +646,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         }
     }
 
-    private void translateWord(final String word,final Bitmap bp) {
+    private void translateWord(final String word, final Bitmap bp) {
 //        clip.setText(word);
         if (SharedPreferencesUtils.getBooleanSharedPreferencesData(this, ShareKeys.CLOSE_TRANSLATE, false)) {
             //关闭自动翻译
@@ -617,7 +666,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                             t = t + item.getExplains().get(i) + ";";
                         }
                         //记录查过的单词 本地翻译关不了 完全可以把释义也加进去
-                        db.insertWordsBookTb(VideoActivity.this,word, "[" + item.getPhonetic() + "]: " + t,bp);
+                        db.insertWordsBookTb(VideoActivity.this, word, "[" + item.getPhonetic() + "]: " + t, bp);
                         showTranslateResultDialog(word, result.getQuery() + "  [" + item.getPhonetic() + "]: " + "\n" + t);
                     } else {
                         baseToast.showToast("没查到该词");
@@ -668,7 +717,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         dialog.setKeyBorad26Listener(new English26KeyBoardView.KeyBorad26Listener() {
             @Override
             public void inputFinish(String s) {
-                translateWord(s,bp);
+                translateWord(s, bp);
             }
 
             @Override
@@ -683,6 +732,34 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.play_speed_tv:
+                if (speedCl.isShown()) {
+                    speedCl.setVisibility(View.GONE);
+                } else {
+                    speedCl.setVisibility(View.VISIBLE);
+                }
+                break;
+            case R.id.sppeed_tv50:
+                changeplayerSpeed(0.5f);
+                break;
+            case R.id.sppeed_tv75:
+                changeplayerSpeed(0.75f);
+                break;
+            case R.id.sppeed_tv100:
+                changeplayerSpeed(1f);
+                break;
+            case R.id.sppeed_tv125:
+                changeplayerSpeed(1.25f);
+                break;
+            case R.id.sppeed_tv150:
+                changeplayerSpeed(1.5f);
+                break;
+            case R.id.sppeed_tv175:
+                changeplayerSpeed(1.75f);
+                break;
+            case R.id.sppeed_tv200:
+                changeplayerSpeed(2f);
+                break;
             case R.id.choose_uri_btn:
 
                 break;
@@ -707,6 +784,9 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                     hideControl();
                 } else {
                     showControl();
+                }
+                if (speedCl.isShown()) {
+                    speedCl.setVisibility(View.GONE);
                 }
                 if (mPlayer.isPlaying()) {
                     playPause();
