@@ -9,7 +9,7 @@ VideoCrawler是一款视频 APP，特色功能是字幕遮挡。
 
 ![github](https://github.com/warriorWorld/VideoCrawler/blob/master/app/screenshot/video.jpg)
 
-![github](https://https://github.com/warriorWorld/VideoCrawler/blob/master/app/screenshot/video1.jpg)
+![github](https://github.com/warriorWorld/VideoCrawler/blob/master/app/screenshot/video1.jpg)
 
 支持本地视频
 
