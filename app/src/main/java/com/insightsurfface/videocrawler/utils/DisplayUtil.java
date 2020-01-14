@@ -2,6 +2,8 @@ package com.insightsurfface.videocrawler.utils;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.WindowManager;
 
 public class DisplayUtil extends com.insightsurface.lib.utils.DisplayUtil {
@@ -35,5 +37,22 @@ public class DisplayUtil extends com.insightsurface.lib.utils.DisplayUtil {
         } else {
             return 0;
         }
+    }
+
+    public static boolean isPad(Context context) {
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        // 屏幕宽度
+        float screenWidth = display.getWidth();
+        // 屏幕高度
+        float screenHeight = display.getHeight();
+        DisplayMetrics dm = new DisplayMetrics();
+        display.getMetrics(dm);
+        double x = Math.pow(dm.widthPixels / dm.xdpi, 2);
+        double y = Math.pow(dm.heightPixels / dm.ydpi, 2);
+        // 屏幕尺寸
+        double screenInches = Math.sqrt(x + y);
+        // 大于6尺寸则为Pad
+        return screenInches >= 7.5;
     }
 }

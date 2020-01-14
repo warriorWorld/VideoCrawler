@@ -780,6 +780,24 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         }
     }
 
+    private void showImgEditDialog(final Bitmap bp) {
+        MangaImgEditDialog mangaImgEditDialog = new MangaImgEditDialog(this);
+        mangaImgEditDialog.setOnEditResultListener(new OnEditResultListener() {
+            @Override
+            public void onResult(String text) {
+                translateWord(text,bp);
+            }
+
+            @Override
+            public void onCancelClick() {
+
+            }
+        });
+        mangaImgEditDialog.show();
+        mangaImgEditDialog.setImgRes(bp);
+        mangaImgEditDialog.clearEdit();
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -847,7 +865,11 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                     top = (int) (ratio * bgBitmap.getHeight());
                     Bitmap finalBp = Bitmap.createBitmap(bgBitmap, 0, top, bgBitmap.getWidth(), bgBitmap.getHeight() - top);
                     bgBitmap.recycle();
-                    showImgLandscapeKeyBoardDialog(finalBp);
+                    if (DisplayUtil.isPad(VideoActivity.this)) {
+                        showImgEditDialog(finalBp);
+                    } else {
+                        showImgLandscapeKeyBoardDialog(finalBp);
+                    }
 //                showSearchDialog();
                 }
                 break;
