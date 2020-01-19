@@ -7,6 +7,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.text.ClipboardManager;
+import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.RelativeLayout;
@@ -23,6 +24,7 @@ import com.insightsurfface.videocrawler.db.DbAdapter;
 import com.insightsurfface.videocrawler.utils.DisplayUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class WordsActivity extends BaseRefreshListActivity implements SensorEventListener {
     private ArrayList<WordsBookBean> wordsList = new ArrayList<WordsBookBean>();
@@ -36,6 +38,7 @@ public class WordsActivity extends BaseRefreshListActivity implements SensorEven
     private Sensor mSensorAccelerometer;
     private int currentOrientation = 0;
     private int screenWidth, screenHeight;
+    private View shuffleV;
 
     @Override
     protected void onCreateInit() {
@@ -74,6 +77,14 @@ public class WordsActivity extends BaseRefreshListActivity implements SensorEven
         topBar = (RelativeLayout) findViewById(R.id.top_bar);
         topBarLeft = (TextView) findViewById(R.id.top_bar_left);
         topBarRight = (TextView) findViewById(R.id.top_bar_right);
+        shuffleV = findViewById(R.id.shuffle_dv);
+        shuffleV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Collections.shuffle(wordsList);
+                mAdapter.notifyDataSetChanged();
+            }
+        });
         LayoutAnimationController controller = new LayoutAnimationController(AnimationUtils.loadAnimation(this, R.anim.recycler_load));
         refreshRcv.setLayoutAnimation(controller);
         baseTopBar.setTitle("生词本");
@@ -142,8 +153,13 @@ public class WordsActivity extends BaseRefreshListActivity implements SensorEven
             try {
                 float gyroscope_x = event.values[0];
                 float gyroscope_y = event.values[1];
+                float gyroscope_z = event.values[2];
 
-                topBarRight.setText(gyroscope_x + "；" + event.values[1] + "；" + event.values[2]);
+//                topBarRight.setText(gyroscope_x + "；" + gyroscope_y + "；" + gyroscope_z);
+                if (gyroscope_z>9){
+                    //Z大于9意味着平放了 平放保留之前的状态
+                    return;
+                }
                 if (Math.abs(gyroscope_x) <= 2 && gyroscope_y > 0 && currentOrientation != 0) {
                     currentOrientation = 0;
                     setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);

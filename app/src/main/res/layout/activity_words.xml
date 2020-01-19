@@ -36,4 +36,14 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/ok_btn"
         android:layout_below="@+id/top_bar"></include>
+
+    <ImageView
+        android:id="@+id/shuffle_dv"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="20dp"
+        android:src="@drawable/ic_shuffle_card"></ImageView>
 </RelativeLayout>
