@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
 public class Configure extends com.insightsurface.lib.config.Configure {
-    public static final int DB_VERSION = 1;
+    public static final int DB_VERSION = 2;
     public static int currentOrientation = 90;
     final public static DisplayImageOptions smallImageOptions = new DisplayImageOptions.Builder()
             .cacheInMemory(true)

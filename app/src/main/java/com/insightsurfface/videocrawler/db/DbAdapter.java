@@ -44,8 +44,8 @@ public class DbAdapter {
     /**
      * 插入一条生词信息
      */
-    public void insertWordsBookTb(Context context, String word, String translate,Bitmap bp) {
-        ShareObjUtil.saveObject(context, BitmapUtils.bitmapToString(bp,false), word + ShareKeys.WORD_BITMAP);
+    public void insertWordsBookTb(Context context, String word, String translate, Bitmap bp) {
+        ShareObjUtil.saveObject(context, BitmapUtils.bitmapToString(bp, false), word + ShareKeys.WORD_BITMAP);
         int time = queryQueryedTime(word);
         if (time > 0) {
             //如果查过这个单词 那就update 并且time+1
@@ -117,6 +117,9 @@ public class DbAdapter {
         ArrayList<WordsBookBean> resBeans = new ArrayList<WordsBookBean>();
         Cursor cursor = db
                 .query("WordsBook", null, null, null, null, null, "createdtime desc");
+        long currentTime = System.currentTimeMillis();
+        int minGapTime = 6 * 60 * 60 * 1000;
+        long minTime = currentTime - minGapTime;
 
         while (cursor.moveToNext()) {
             String word = cursor.getString(cursor.getColumnIndex("word"));
@@ -124,12 +127,28 @@ public class DbAdapter {
             int time = cursor
                     .getInt(cursor.getColumnIndex("time"));
             Bitmap bp = BitmapUtil.stringToBitmap((String) ShareObjUtil.getObject(context, word + ShareKeys.WORD_BITMAP));
-            WordsBookBean item = new WordsBookBean();
-            item.setWord(word);
-            item.setTime(time);
-            item.setTranslate(translate);
-            item.setWordBp(bp);
-            resBeans.add(item);
+            long lastKillTime = 0;
+            try {
+                lastKillTime = cursor.getLong(cursor.getColumnIndex("update_time"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            int killTime = 0;
+            try {
+                killTime = cursor.getInt(cursor.getColumnIndex("kill_time"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (killTime > 0 && minTime < lastKillTime) {
+                //不显示 kill过的并且时间未超过时长的
+            } else {
+                WordsBookBean item = new WordsBookBean();
+                item.setWord(word);
+                item.setTime(time);
+                item.setTranslate(translate);
+                item.setWordBp(bp);
+                resBeans.add(item);
+            }
         }
         cursor.close();
         return resBeans;
@@ -206,10 +225,44 @@ public class DbAdapter {
         ShareObjUtil.deleteFile(context, id + ShareKeys.VIDEO_THUMBNAIL);
     }
 
+    public int queryKilledTime(String word) {
+        int res = 0;
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery(
+                    "select kill_time from WordsBook where word=?",
+                    new String[]{word});
+            int count = cursor.getCount();
+            if (count > 0) {
+                while (cursor.moveToNext()) {
+                    res = cursor.getInt(cursor.getColumnIndex("kill_time"));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (null != cursor) {
+                cursor.close();
+            }
+        }
+        return res;
+    }
+
+    public void killWordByWord(Context context, String word) {
+        int time = queryKilledTime(word);
+        time++;
+        if (time >= 3) {
+            deleteWordByWord(context, word);
+        } else {
+            db.execSQL("update WordsBook set kill_time=?,update_time=? where word=?",
+                    new Object[]{time, System.currentTimeMillis(), word});
+        }
+    }
+
     /**
      * 删除生词
      */
-    public void deleteWordByWord(Context context,String word) {
+    public void deleteWordByWord(Context context, String word) {
         db.execSQL("delete from WordsBook where word=?",
                 new Object[]{word});
         ShareObjUtil.deleteFile(context, word + ShareKeys.WORD_BITMAP);

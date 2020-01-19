@@ -97,7 +97,7 @@ public class WordsActivity extends BaseRefreshListActivity implements SensorEven
                     @Override
                     public void onItemClick(int position) {
                         VibratorUtil.Vibrate(WordsActivity.this, 60);
-                        db.deleteWordByWord(WordsActivity.this, wordsList.get(position).getWord());
+                        db.killWordByWord(WordsActivity.this, wordsList.get(position).getWord());
                         mAdapter.remove(position);
                     }
                 });
@@ -143,7 +143,7 @@ public class WordsActivity extends BaseRefreshListActivity implements SensorEven
                 float gyroscope_x = event.values[0];
                 float gyroscope_y = event.values[1];
 
-//                topBarRight.setText(gyroscope_x + "；" + event.values[1] + "；" + event.values[2]);
+                topBarRight.setText(gyroscope_x + "；" + event.values[1] + "；" + event.values[2]);
                 if (Math.abs(gyroscope_x) <= 2 && gyroscope_y > 0 && currentOrientation != 0) {
                     currentOrientation = 0;
                     setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);

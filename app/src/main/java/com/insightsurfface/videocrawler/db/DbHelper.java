@@ -13,7 +13,7 @@ public class DbHelper extends SQLiteOpenHelper {
             + "path text," + "title text," + "duration int," + "watched_time int)";
     public static final String WORDS_BOOK = "create table if not exists WordsBook ("
             + "id integer primary key autoincrement,"
-            + "word text,"  + "translate text,"+ "time integer," + "createdtime TimeStamp NOT NULL DEFAULT (datetime('now','localtime')))";
+            + "word text," + "translate text," + "time integer," + "kill_time integer," + "update_time long," + "createdtime TimeStamp NOT NULL DEFAULT (datetime('now','localtime')))";
 
     public DbHelper(Context context, String name, CursorFactory factory,
                     int version) {
