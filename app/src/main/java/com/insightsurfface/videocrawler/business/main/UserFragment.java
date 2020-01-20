@@ -61,6 +61,7 @@ public class UserFragment extends BaseFragment implements View.OnClickListener,
     private ClipboardManager clip;//复制文本用
     private final String QQ_GROUP = "782685214";
     private DownloadDialog downloadDialog;
+    private View killableTimeRl, killPeriodRl;
 
     @Nullable
     @Override
@@ -87,6 +88,8 @@ public class UserFragment extends BaseFragment implements View.OnClickListener,
         keyboardRl = (RelativeLayout) view.findViewById(R.id.keyboard_rl);
         shelterRl = (RelativeLayout) view.findViewById(R.id.shelter_rl);
         jumpFrameRl = view.findViewById(R.id.jump_frame_rl);
+        killableTimeRl = view.findViewById(R.id.killable_time_rl);
+        killPeriodRl = view.findViewById(R.id.kill_peroid_rl);
         qqTv = (TextView) view.findViewById(R.id.qq_tv);
         qqTv.setText
                 ("获取最新版App，请加qq群：" + QQ_GROUP + "（点击群号可复制），或直接点击下载最新App。",
@@ -159,6 +162,8 @@ public class UserFragment extends BaseFragment implements View.OnClickListener,
         shelterRl.setOnClickListener(this);
         userIv.setOnClickListener(this);
         jumpFrameRl.setOnClickListener(this);
+        killPeriodRl.setOnClickListener(this);
+        killableTimeRl.setOnClickListener(this);
     }
 
     private void showVersionDialog() {
@@ -342,6 +347,56 @@ public class UserFragment extends BaseFragment implements View.OnClickListener,
         dialog.setCancelBtnText("取消");
     }
 
+    private void showKillableTimeDialog() {
+        VideoEditDialog dialog = new VideoEditDialog(getActivity());
+        dialog.setOnEditResultListener(new OnEditResultListener() {
+            @Override
+            public void onResult(String text) {
+                SharedPreferencesUtils.setSharedPreferencesData
+                        (getActivity(), ShareKeys.KILLABLE_TIME_KEY, Integer.valueOf(text));
+            }
+
+            @Override
+            public void onCancelClick() {
+
+            }
+        });
+        dialog.show();
+        dialog.setOnlyNumInput(true);
+        dialog.setTitle("可斩次数设置");
+        dialog.setHint("默认值为3 仅供参考");
+        dialog.setMessage("请输入要设置的可斩次数，如需一次既斩请输入1。");
+        int height = SharedPreferencesUtils.getIntSharedPreferencesData(getActivity(), ShareKeys.KILLABLE_TIME_KEY, -1);
+        if (height != -1) {
+            dialog.setEditText(height + "");
+        }
+    }
+
+    private void showKillPeriodDialog() {
+        VideoEditDialog dialog = new VideoEditDialog(getActivity());
+        dialog.setOnEditResultListener(new OnEditResultListener() {
+            @Override
+            public void onResult(String text) {
+                SharedPreferencesUtils.setSharedPreferencesData
+                        (getActivity(), ShareKeys.KILL_PERIOD_KEY, Integer.valueOf(text));
+            }
+
+            @Override
+            public void onCancelClick() {
+
+            }
+        });
+        dialog.show();
+        dialog.setOnlyNumInput(true);
+        dialog.setTitle("已斩单词出现间隔时长设置");
+        dialog.setHint("默认值为6小时 仅供参考");
+        dialog.setMessage("请输入要设置的已斩单词出现间隔时长（单位：小时）");
+        int height = SharedPreferencesUtils.getIntSharedPreferencesData(getActivity(), ShareKeys.KILL_PERIOD_KEY, -1);
+        if (height != -1) {
+            dialog.setEditText(height + "");
+        }
+    }
+
     @Override
     public void onClick(View v) {
         Intent intent = null;
@@ -362,6 +417,12 @@ public class UserFragment extends BaseFragment implements View.OnClickListener,
                 break;
             case R.id.jump_frame_rl:
                 showJumpFrameOptionDialog();
+                break;
+            case R.id.killable_time_rl:
+                showKillableTimeDialog();
+                break;
+            case R.id.kill_peroid_rl:
+                showKillPeriodDialog();
                 break;
         }
         if (null != intent) {

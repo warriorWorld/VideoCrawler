@@ -110,6 +110,7 @@ public class WordsActivity extends BaseRefreshListActivity implements SensorEven
                         VibratorUtil.Vibrate(WordsActivity.this, 60);
                         db.killWordByWord(WordsActivity.this, wordsList.get(position).getWord());
                         mAdapter.remove(position);
+                        topBarLeft.setText("总计：" + wordsList.size() + "个生词");
                     }
                 });
                 mAdapter.setOnRecycleItemLongClickListener(new OnRecycleItemLongClickListener() {

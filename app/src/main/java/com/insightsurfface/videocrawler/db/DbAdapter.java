@@ -8,6 +8,7 @@ import android.net.Uri;
 
 import com.insightsurface.lib.utils.BitmapUtils;
 import com.insightsurface.lib.utils.ShareObjUtil;
+import com.insightsurface.lib.utils.SharedPreferencesUtils;
 import com.insightsurfface.videocrawler.bean.VideoBean;
 import com.insightsurfface.videocrawler.bean.WordsBookBean;
 import com.insightsurfface.videocrawler.config.Configure;
@@ -118,8 +119,9 @@ public class DbAdapter {
         Cursor cursor = db
                 .query("WordsBook", null, null, null, null, null, "createdtime desc");
         long currentTime = System.currentTimeMillis();
-        int minGapTime = 6 * 60 * 60 * 1000;
-        long minTime = currentTime - minGapTime;
+        int killPeriod = SharedPreferencesUtils.getIntSharedPreferencesData(context, ShareKeys.KILL_PERIOD_KEY, 6);
+        int minGapTime = killPeriod * 60 * 60 * 1000;
+
 
         while (cursor.moveToNext()) {
             String word = cursor.getString(cursor.getColumnIndex("word"));
@@ -139,6 +141,8 @@ public class DbAdapter {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            //随着kill次数 间隔时长乘数递增
+            long minTime = currentTime - minGapTime * killTime;
             if (killTime > 0 && minTime < lastKillTime) {
                 //不显示 kill过的并且时间未超过时长的
             } else {
@@ -251,7 +255,8 @@ public class DbAdapter {
     public void killWordByWord(Context context, String word) {
         int time = queryKilledTime(word);
         time++;
-        if (time >= 3) {
+        int killableTime = SharedPreferencesUtils.getIntSharedPreferencesData(context, ShareKeys.KILLABLE_TIME_KEY, 3);
+        if (time >= killableTime) {
             deleteWordByWord(context, word);
         } else {
             db.execSQL("update WordsBook set kill_time=?,update_time=? where word=?",

@@ -269,6 +269,76 @@
             android:src="@drawable/forward" />
     </RelativeLayout>
 
+    <RelativeLayout
+        android:id="@+id/killable_time_rl"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="12dp"
+        android:background="@drawable/rect_white_c5"
+        android:elevation="1dp">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:src="@drawable/ic_gun" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="60dp"
+            android:text="设置可斩次数"
+            android:textColor="@color/main_text_color"
+            android:textSize="17sp" />
+
+        <ImageView
+            android:layout_width="6dp"
+            android:layout_height="13dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:src="@drawable/forward" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/kill_peroid_rl"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="12dp"
+        android:background="@drawable/rect_white_c5"
+        android:elevation="1dp">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:src="@drawable/ic_stab" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="60dp"
+            android:text="设置已斩单词出现间隔时长"
+            android:textColor="@color/main_text_color"
+            android:textSize="17sp" />
+
+        <ImageView
+            android:layout_width="6dp"
+            android:layout_height="13dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:src="@drawable/forward" />
+    </RelativeLayout>
+
     <TextView
         android:id="@+id/qq_tv"
         android:layout_width="wrap_content"
