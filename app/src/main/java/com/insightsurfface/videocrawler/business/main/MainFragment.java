@@ -50,7 +50,7 @@ public class MainFragment extends BaseRefreshListFragment {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case UPDATE_LIST:
-                    doGetData();
+                    initRec();
                     break;
             }
         }
@@ -121,6 +121,7 @@ public class MainFragment extends BaseRefreshListFragment {
                     db.insertVideoTableTb(getActivity(), item.getPath(), item.getTitle(), item.getDuration(), 0);
                 }
                 SingleLoadBarUtil.getInstance().dismissLoadBar();
+                videoList = db.queryAllVideos(getActivity());
                 mHandler.sendEmptyMessage(UPDATE_LIST);
             }
         }).start();
@@ -135,6 +136,7 @@ public class MainFragment extends BaseRefreshListFragment {
 
                 db.insertVideoTableTb(getActivity(), path, StringUtil.cutString(path, '/', '.'), duration, 0);
                 SingleLoadBarUtil.getInstance().dismissLoadBar();
+                videoList = db.queryAllVideos(getActivity());
                 mHandler.sendEmptyMessage(UPDATE_LIST);
             }
         }).start();
@@ -150,7 +152,7 @@ public class MainFragment extends BaseRefreshListFragment {
         super.onHiddenChanged(hidden);
         if (!hidden) {
             try {
-                doGetData();
+//                doGetData();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -159,9 +161,13 @@ public class MainFragment extends BaseRefreshListFragment {
 
     @Override
     protected void doGetData() {
-        videoList = db.queryAllVideos(getActivity());
-
-        initRec();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                videoList = db.queryAllVideos(getActivity());
+                mHandler.sendEmptyMessage(UPDATE_LIST);
+            }
+        }).start();
     }
 
     @Override

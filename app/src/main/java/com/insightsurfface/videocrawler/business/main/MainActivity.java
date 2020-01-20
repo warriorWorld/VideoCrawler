@@ -72,7 +72,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
     @Override
     protected void onResume() {
         super.onResume();
-        curFragment.onHiddenChanged(false);
+//        curFragment.onHiddenChanged(false);
     }
 
     @Override
@@ -153,7 +153,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
                 transaction.show(to).commitAllowingStateLoss(); // 隐藏当前的fragment，显示下一个
             }
         }
-        to.onHiddenChanged(false);
+//        to.onHiddenChanged(false);
         toggleBottomBar(to);
     }
 
