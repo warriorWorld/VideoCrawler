@@ -6,6 +6,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.AudioManager;
+import android.speech.tts.TextToSpeech;
 import android.text.ClipboardManager;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -22,11 +24,14 @@ import com.insightsurfface.videocrawler.adapter.WordsAdapter;
 import com.insightsurfface.videocrawler.bean.WordsBookBean;
 import com.insightsurfface.videocrawler.db.DbAdapter;
 import com.insightsurfface.videocrawler.utils.DisplayUtil;
+import com.insightsurfface.videocrawler.utils.VolumeUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Locale;
 
-public class WordsActivity extends BaseRefreshListActivity implements SensorEventListener {
+public class WordsActivity extends BaseRefreshListActivity implements SensorEventListener, TextToSpeech.OnInitListener {
     private ArrayList<WordsBookBean> wordsList = new ArrayList<WordsBookBean>();
     private DbAdapter db;//数据库
     private WordsAdapter mAdapter;
@@ -39,6 +44,7 @@ public class WordsActivity extends BaseRefreshListActivity implements SensorEven
     private int currentOrientation = 0;
     private int screenWidth, screenHeight;
     private View shuffleV;
+    private TextToSpeech tts;
 
     @Override
     protected void onCreateInit() {
@@ -47,6 +53,61 @@ public class WordsActivity extends BaseRefreshListActivity implements SensorEven
         screenWidth = DisplayUtil.getScreenRealWidth(this);
         screenHeight = DisplayUtil.getScreenRealHeight(this);
         initSensorManager();
+        initTTS();
+    }
+
+    /**
+     * 用来初始化TextToSpeech引擎
+     * status:SUCCESS或ERROR这2个值
+     * setLanguage设置语言，帮助文档里面写了有22种
+     * TextToSpeech.LANG_MISSING_DATA：表示语言的数据丢失。
+     * TextToSpeech.LANG_NOT_SUPPORTED:不支持
+     */
+    @Override
+    public void onInit(int status) {
+        if (status == TextToSpeech.SUCCESS) {
+            int result = tts.setLanguage(Locale.UK);
+            if (result == TextToSpeech.LANG_MISSING_DATA
+                    || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                baseToast.showToast("数据丢失或不支持");
+            }
+        }
+    }
+
+    private void initTTS() {
+        tts = new TextToSpeech(this, this); // 参数Context,TextToSpeech.OnInitListener
+    }
+
+    protected void text2Speech(String text) {
+        text2Speech(text, true);
+    }
+
+    protected void text2Speech(String text, boolean breakSpeaking) {
+        if (tts == null) {
+            return;
+        }
+        if (tts.isSpeaking()) {
+            if (breakSpeaking) {
+                tts.stop();
+            } else {
+                return;
+            }
+        }
+        tts.setPitch(1f);// 设置音调，值越大声音越尖（女生），值越小则变成男声,1.0是常规
+        HashMap<String, String> myHashAlarm = new HashMap();
+        myHashAlarm.put(TextToSpeech.Engine.KEY_PARAM_STREAM,
+                String.valueOf(AudioManager.STREAM_ALARM));
+        myHashAlarm.put(TextToSpeech.Engine.KEY_PARAM_VOLUME,
+                VolumeUtil.getMusicVolumeRate(this) + "");
+
+        if (VolumeUtil.getHeadPhoneStatus(this)) {
+            AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+//            mAudioManager.setStreamMute(AudioManager.STREAM_ALARM, true);
+            mAudioManager.adjustStreamVolume(AudioManager.STREAM_ALARM, AudioManager.ADJUST_MUTE, 0);
+            mAudioManager.startBluetoothSco();
+        }
+        tts.speak(text,
+                TextToSpeech.QUEUE_FLUSH, myHashAlarm);
     }
 
     private void initSensorManager() {
@@ -113,6 +174,12 @@ public class WordsActivity extends BaseRefreshListActivity implements SensorEven
                         topBarLeft.setText("总计：" + wordsList.size() + "个生词");
                     }
                 });
+                mAdapter.setOnItemTranslateClickListener(new OnRecycleItemClickListener() {
+                    @Override
+                    public void onItemClick(int position) {
+                        text2Speech(wordsList.get(position).getWord());
+                    }
+                });
                 mAdapter.setOnRecycleItemLongClickListener(new OnRecycleItemLongClickListener() {
                     @Override
                     public void onItemLongClick(int position) {
@@ -157,7 +224,7 @@ public class WordsActivity extends BaseRefreshListActivity implements SensorEven
                 float gyroscope_z = event.values[2];
 
 //                topBarRight.setText(gyroscope_x + "；" + gyroscope_y + "；" + gyroscope_z);
-                if (gyroscope_z>9){
+                if (gyroscope_z > 9) {
                     //Z大于9意味着平放了 平放保留之前的状态
                     return;
                 }
@@ -198,5 +265,7 @@ public class WordsActivity extends BaseRefreshListActivity implements SensorEven
     protected void onDestroy() {
         super.onDestroy();
         db.closeDb();
+        tts.stop(); // 不管是否正在朗读TTS都被打断
+        tts.shutdown(); // 关闭，释放资源
     }
 }

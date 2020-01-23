@@ -30,6 +30,7 @@ public class WordsAdapter extends BaseRecyclerAdapter {
     private ArrayList<WordsBookBean> list = null;
     private OnRecycleItemClickListener onRecycleItemClickListener;
     private OnRecycleItemLongClickListener mOnRecycleItemLongClickListener;
+    private OnRecycleItemClickListener onItemTranslateClickListener;
     private int currentWidth = 0;
 
     public WordsAdapter(Context context) {
@@ -80,6 +81,9 @@ public class WordsAdapter extends BaseRecyclerAdapter {
             public void onClick(View v) {
                 ((NormalViewHolder) viewHolder).translateTv.setBackgroundColor(context.getResources().getColor(R.color.transparency));
                 ((NormalViewHolder) viewHolder).translateTv.setTextColor(context.getResources().getColor(R.color.main_text_color_gray));
+                if (null != onItemTranslateClickListener) {
+                    onItemTranslateClickListener.onItemClick(position);
+                }
             }
         });
         ((NormalViewHolder) viewHolder).translateTv.setOnLongClickListener(new View.OnLongClickListener() {
@@ -140,6 +144,10 @@ public class WordsAdapter extends BaseRecyclerAdapter {
         list.remove(position);
         list.add(position, data);
         notifyItemChanged(position);
+    }
+
+    public void setOnItemTranslateClickListener(OnRecycleItemClickListener onItemTranslateClickListener) {
+        this.onItemTranslateClickListener = onItemTranslateClickListener;
     }
 
     //自定义的ViewHolder，持有每个Item的的所有界面元素
