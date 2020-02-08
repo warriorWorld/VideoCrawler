@@ -785,7 +785,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         mangaImgEditDialog.setOnEditResultListener(new OnEditResultListener() {
             @Override
             public void onResult(String text) {
-                translateWord(text,bp);
+                translateWord(text, bp);
             }
 
             @Override
@@ -852,6 +852,9 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                 }
                 if (mPlayer.isPlaying()) {
                     playPause();
+                } else {
+                    playStart();
+                    hideControl();
                 }
                 break;
             case R.id.translate_iv:
