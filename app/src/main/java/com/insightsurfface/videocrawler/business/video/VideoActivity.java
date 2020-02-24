@@ -39,6 +39,7 @@ import com.insightsurfface.videocrawler.config.Configure;
 import com.insightsurfface.videocrawler.config.ShareKeys;
 import com.insightsurfface.videocrawler.db.DbAdapter;
 import com.insightsurfface.videocrawler.listener.OnEditResultListener;
+import com.insightsurfface.videocrawler.listener.ProgressChangeListener;
 import com.insightsurfface.videocrawler.utils.DisplayUtil;
 import com.insightsurfface.videocrawler.utils.FastClickUtil;
 import com.insightsurfface.videocrawler.utils.ScreenShot;
@@ -51,6 +52,7 @@ import com.insightsurfface.videocrawler.widget.dialog.MangaImgEditDialog;
 import com.insightsurfface.videocrawler.widget.dialog.OnlyEditDialog;
 import com.insightsurfface.videocrawler.widget.dialog.TranslateDialog;
 import com.insightsurfface.videocrawler.widget.dragview.ShelterView;
+import com.insightsurfface.videocrawler.widget.surfaceview.ProgressSurfaceView;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
@@ -72,7 +74,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         View.OnClickListener,
         SensorEventListener {
     //    private VideoView crawlerVv;
-    private SurfaceView videoSv;
+    private ProgressSurfaceView videoSv;
     private String testURL = "http://ugccsy.qq.com/uwMROfz2r5zBIaQXGdGnC2dfJ6nAzEoO290Tsw9-2jpi_xWl/e3045nq422n.p701.1.mp4?sdtfrom=v1104&guid=4c68826f6ff46a643a05b409826286dd&vkey=B71428DD4372FA1C4D17F2139A5C470AF29469EBA261C6D167C28F10BBCF665B25C3F1AB1FC5C0C30A3E38E4ABE89ABE289D1DA018BBBE911B4925AD383DC3DB65796F0637199E68D8617FCFDA5BBDC19875A49FBC7912578A28DC8C441BDC47B7E48DC5B585051F43E13B2C0B63254E4DA1F356D92587BE2C16608CFDAB21EC";
     private Button chooseUriBtn;
     private MediaPlayer mPlayer;
@@ -233,6 +235,33 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     protected void initUI() {
         super.initUI();
         videoSv = findViewById(R.id.video_sv);
+        videoSv.setProgressChangeListener(new ProgressChangeListener() {
+            @Override
+            public void onProgressChanged(int value) {
+                if (userControling) {
+                    int pos = lastPauseLocation + value * 50;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        mPlayer.seekTo(pos,MediaPlayer.SEEK_CLOSEST);
+                    }else {
+                        mPlayer.seekTo(pos);
+                    }
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch() {
+                playPause();
+                userControling = true;
+                showControl();
+                centerControlGroup.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onStopTrackingTouch() {
+                playStart();
+                userControling = false;
+            }
+        });
         chooseUriBtn = findViewById(R.id.choose_uri_btn);
         controlGroup = findViewById(R.id.control_group);
         controlGroup.setVisibility(View.GONE);
