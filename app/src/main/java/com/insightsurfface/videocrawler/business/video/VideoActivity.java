@@ -239,10 +239,10 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
             @Override
             public void onProgressChanged(int value) {
                 if (userControling) {
-                    int pos = lastPauseLocation + value * 50;
+                    int pos = lastPauseLocation + value * 25;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        mPlayer.seekTo(pos,MediaPlayer.SEEK_CLOSEST);
-                    }else {
+                        mPlayer.seekTo(pos, MediaPlayer.SEEK_CLOSEST);
+                    } else {
                         mPlayer.seekTo(pos);
                     }
                 }
@@ -259,6 +259,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
             @Override
             public void onStopTrackingTouch() {
                 playStart();
+                hideControl();
                 userControling = false;
             }
         });
