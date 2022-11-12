@@ -36,6 +36,8 @@ import com.insightsurfface.videocrawler.widget.dialog.ListDialog;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
@@ -167,6 +169,7 @@ public class MainFragment extends BaseRefreshListFragment {
             @Override
             public void run() {
                 videoList = db.queryAllVideos(getActivity());
+                Collections.reverse(videoList);
                 mHandler.sendEmptyMessage(UPDATE_LIST);
             }
         }).start();
