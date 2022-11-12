@@ -32,6 +32,7 @@ import android.widget.TextView;
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.insightsurface.lib.utils.Logger;
+import com.insightsurface.lib.utils.NumberUtil;
 import com.insightsurface.lib.utils.SharedPreferencesUtils;
 import com.insightsurfface.stylelibrary.keyboard.English26KeyBoardView;
 import com.insightsurfface.videocrawler.R;
@@ -149,6 +150,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private boolean isUserControlling = false;
     private Handler doubleClickHandler = new Handler(Looper.getMainLooper());
     private int tryDoubleClick = 0;
+    private float currentVolume;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -205,8 +207,8 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         mPlayer.setOnPreparedListener(this);
         mPlayer.setOnSeekCompleteListener(this);
         mPlayer.setOnVideoSizeChangedListener(this);
-        float volume = Float.valueOf(SPUtil.getIntSharedPreferencesData(this, ShareKeys.VOLUME_KEY)) / 100f;
-        mPlayer.setVolume(volume, volume);
+        currentVolume = Float.valueOf(SPUtil.getIntSharedPreferencesData(this, ShareKeys.VOLUME_KEY)) / 100f;
+        mPlayer.setVolume(currentVolume, currentVolume);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             mPlayer.setOnSubtitleDataListener(new MediaPlayer.OnSubtitleDataListener() {
                 @Override
@@ -250,8 +252,11 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
             public void onProgressChanged(float value) {
                 int pos = lastPauseLocation + (int) (duration * value);
                 Logger.d("sv:" + value + " last:" + lastPauseLocation + " duration:" + duration + " ,pos:" + pos);
-                if (pos > duration || pos < 0) {
-                    return;
+                if (pos > duration) {
+                    pos = duration;
+                }
+                if (pos < 0) {
+                    pos = 0;
                 }
                 progressSb.setProgress(pos);
             }
@@ -269,6 +274,31 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                 isUserControlling = false;
                 playStart();
                 hideControl();
+            }
+
+            @Override
+            public void onProgressChangedVertical(float value) {
+                Logger.d("current:" + currentVolume + " ,value:" + value);
+                currentVolume += value;
+                if (currentVolume > 1) {
+                    currentVolume = 1;
+                }
+                if (currentVolume < 0) {
+                    currentVolume = 0;
+                }
+                stateTv.setText(NumberUtil.toCommaNum(currentVolume));
+                mPlayer.setVolume(currentVolume, currentVolume);
+            }
+
+            @Override
+            public void onStartTrackingTouchVertical() {
+
+            }
+
+            @Override
+            public void onStopTrackingTouchVertical() {
+                stateTv.setText("");
+                SPUtil.setSharedPreferencesData(VideoActivity.this, ShareKeys.VOLUME_KEY, Math.round(currentVolume * 100));
             }
 
             @Override

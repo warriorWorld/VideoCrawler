@@ -27,6 +27,14 @@ public class ProgressSurfaceView extends SurfaceView {
     private Handler longTouchHandler = new Handler(Looper.getMainLooper());
     private boolean longTouchTriggered = false;
 
+    private enum DragType {
+        INIT,
+        VERTICAL,
+        HORIZONTAL
+    }
+
+    private DragType mDragType = DragType.INIT;
+
     public ProgressSurfaceView(Context context) {
         super(context);
         init(context);
@@ -78,26 +86,50 @@ public class ProgressSurfaceView extends SurfaceView {
                 downViewPoint.set((int) event.getX(), (int) event.getY());
                 touchDown = true;
                 longTouchTriggered = false;
+                mDragType = DragType.INIT;
                 handleLongTouch();
                 break;
             case MotionEvent.ACTION_MOVE:
                 int distanceX = x - downPoint.x;
-                int distanceY = y - downPoint.y;
+                int distanceY = downPoint.y - y;//从人的角度决定哪边是上
                 if (touchDown) {
-                    if (Math.abs(distanceX) > mTouchSlop) {
+                    if (Math.abs(distanceX) > mTouchSlop && mDragType != DragType.VERTICAL) {
+                        //横向滑动
                         longTouchHandler.removeCallbacksAndMessages(null);
                         if (!startDrag) {
                             startDrag = true;
                         }
                         if (Math.abs(distanceX) > mTrackingTouchSlop
                                 && !trackingTouched) {
+                            //每次down后首次触发决定了之后只关心横向或竖向
+                            mDragType = DragType.HORIZONTAL;
                             if (null != mProgressChangeListener) {
                                 mProgressChangeListener.onStartTrackingTouch();
                             }
                             trackingTouched = true;
                         }
                         if (null != mProgressChangeListener) {
-                            mProgressChangeListener.onProgressChanged(Float.valueOf(distanceX) / Float.valueOf(width));
+//                            Logger.d("distance x:"+distanceX+"/"+width+"/"+getMeasuredWidth());
+                            mProgressChangeListener.onProgressChanged(Float.valueOf(distanceX) / Float.valueOf(getMeasuredWidth()));
+                        }
+                    } else if (Math.abs(distanceY) > mTouchSlop && mDragType != DragType.HORIZONTAL) {
+                        //纵向滑动
+                        longTouchHandler.removeCallbacksAndMessages(null);
+                        if (!startDrag) {
+                            startDrag = true;
+                        }
+                        if (Math.abs(distanceY) > mTrackingTouchSlop
+                                && !trackingTouched) {
+                            //每次down后首次触发决定了之后只关心横向或竖向
+                            mDragType = DragType.VERTICAL;
+                            if (null != mProgressChangeListener) {
+                                mProgressChangeListener.onStartTrackingTouchVertical();
+                            }
+                            trackingTouched = true;
+                        }
+                        if (null != mProgressChangeListener) {
+//                            Logger.d("distance y:"+distanceY+"/"+height+"/"+getMeasuredHeight());
+                            mProgressChangeListener.onProgressChangedVertical(Float.valueOf(distanceY) / Float.valueOf(getMeasuredHeight()));
                         }
                     } else {
                         // click
@@ -110,7 +142,16 @@ public class ProgressSurfaceView extends SurfaceView {
                     if (startDrag) {
                         // drag
                         if (null != mProgressChangeListener) {
-                            mProgressChangeListener.onStopTrackingTouch();
+                            switch (mDragType) {
+                                case INIT:
+                                    break;
+                                case VERTICAL:
+                                    mProgressChangeListener.onStopTrackingTouchVertical();
+                                    break;
+                                case HORIZONTAL:
+                                    mProgressChangeListener.onStopTrackingTouch();
+                                    break;
+                            }
                         }
                         if (longTouchTriggered) {
                             if (null != mProgressChangeListener) {
@@ -132,6 +173,7 @@ public class ProgressSurfaceView extends SurfaceView {
                 touchDown = false;
                 trackingTouched = false;
                 longTouchTriggered = false;
+                mDragType = DragType.INIT;
                 break;
             default:
                 break;

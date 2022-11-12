@@ -82,6 +82,16 @@ public class UserFragment extends BaseFragment implements View.OnClickListener,
         return mainView;
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden){
+            if (null!=volumeBar) {
+                volumeBar.setProgress(SPUtil.getIntSharedPreferencesData(getActivity(), ShareKeys.VOLUME_KEY));
+            }
+        }
+    }
+
     private void initUI(View view) {
         userIv = (ImageView) view.findViewById(R.id.user_iv);
         dayTv = (TextView) view.findViewById(R.id.day_tv);
