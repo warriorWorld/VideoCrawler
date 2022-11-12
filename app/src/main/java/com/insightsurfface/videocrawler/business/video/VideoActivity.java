@@ -42,6 +42,7 @@ import com.insightsurfface.videocrawler.listener.OnEditResultListener;
 import com.insightsurfface.videocrawler.listener.ProgressChangeListener;
 import com.insightsurfface.videocrawler.utils.DisplayUtil;
 import com.insightsurfface.videocrawler.utils.FastClickUtil;
+import com.insightsurfface.videocrawler.utils.SPUtil;
 import com.insightsurfface.videocrawler.utils.ScreenShot;
 import com.insightsurfface.videocrawler.utils.StringUtil;
 import com.insightsurfface.videocrawler.utils.VideoUtil;
@@ -199,6 +200,8 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         mPlayer.setOnPreparedListener(this);
         mPlayer.setOnSeekCompleteListener(this);
         mPlayer.setOnVideoSizeChangedListener(this);
+        float volume = Float.valueOf(SPUtil.getIntSharedPreferencesData(this, ShareKeys.VOLUME_KEY)) / 100f;
+        mPlayer.setVolume(volume, volume);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             mPlayer.setOnSubtitleDataListener(new MediaPlayer.OnSubtitleDataListener() {
                 @Override

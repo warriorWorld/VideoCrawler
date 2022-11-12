@@ -9,4 +9,5 @@ public class ShareKeys extends com.insightsurface.lib.config.ShareKeys {
     public static final String VIDEO_SPEED = "video_speed";
     public static final String KILLABLE_TIME_KEY = "killable_time_key";
     public static final String KILL_PERIOD_KEY = "kill_period_key";
+    public static final String VOLUME_KEY = "volume_key";
 }

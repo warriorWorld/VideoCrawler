@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.insightsurface.lib.base.BaseFragment;
@@ -29,6 +30,7 @@ import com.insightsurfface.videocrawler.R;
 import com.insightsurfface.videocrawler.business.words.WordsActivity;
 import com.insightsurfface.videocrawler.config.Configure;
 import com.insightsurfface.videocrawler.config.ShareKeys;
+import com.insightsurfface.videocrawler.utils.SPUtil;
 import com.insightsurfface.videocrawler.widget.dialog.VideoEditDialog;
 
 import net.tsz.afinal.FinalHttp;
@@ -62,6 +64,8 @@ public class UserFragment extends BaseFragment implements View.OnClickListener,
     private final String QQ_GROUP = "782685214";
     private DownloadDialog downloadDialog;
     private View killableTimeRl, killPeriodRl;
+    private SeekBar volumeBar;
+    private int finalVolume;
 
     @Nullable
     @Override
@@ -90,6 +94,24 @@ public class UserFragment extends BaseFragment implements View.OnClickListener,
         jumpFrameRl = view.findViewById(R.id.jump_frame_rl);
         killableTimeRl = view.findViewById(R.id.killable_time_rl);
         killPeriodRl = view.findViewById(R.id.kill_peroid_rl);
+        volumeBar = view.findViewById(R.id.volume_sb);
+        volumeBar.setProgress(SPUtil.getIntSharedPreferencesData(getActivity(), ShareKeys.VOLUME_KEY));
+        volumeBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                finalVolume = progress;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                SPUtil.setSharedPreferencesData(getActivity(), ShareKeys.VOLUME_KEY, finalVolume);
+            }
+        });
         qqTv = (TextView) view.findViewById(R.id.qq_tv);
         qqTv.setText
                 ("获取最新版App，请加qq群：" + QQ_GROUP + "（点击群号可复制），或直接点击下载最新App。",
