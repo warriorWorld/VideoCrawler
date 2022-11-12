@@ -156,22 +156,27 @@ public class StringUtil {
         }
         return spannableString;
     }
-    public static String second2Hour(int second){
-        int hour=0;
-        int minute=0;
-       if (second<0){
-           return "";
-       }else if (second<60){
-            return "00:"+NumberUtil.toDoubleNum(second);
-        }else if (second<3600){
-            minute=(int)(second/60f);
-            second=second%60;
-            return NumberUtil.toDoubleNum(minute)+":"+NumberUtil.toDoubleNum(second);
-        }else {
-            hour=(int)(second/3600f);
-            minute=(int)((second%3600)/60f);
-            second=second%60;
-            return NumberUtil.toDoubleNum(hour)+":"+NumberUtil.toDoubleNum(minute)+":"+NumberUtil.toDoubleNum(second);
+
+    public static String millsecond2Hour(int millsecond) {
+        return second2Hour((int) (millsecond / 1000f));
+    }
+
+    public static String second2Hour(int second) {
+        int hour = 0;
+        int minute = 0;
+        if (second < 0) {
+            return "";
+        } else if (second < 60) {
+            return "00:" + NumberUtil.toDoubleNum(second);
+        } else if (second < 3600) {
+            minute = (int) (second / 60f);
+            second = second % 60;
+            return NumberUtil.toDoubleNum(minute) + ":" + NumberUtil.toDoubleNum(second);
+        } else {
+            hour = (int) (second / 3600f);
+            minute = (int) ((second % 3600) / 60f);
+            second = second % 60;
+            return NumberUtil.toDoubleNum(hour) + ":" + NumberUtil.toDoubleNum(minute) + ":" + NumberUtil.toDoubleNum(second);
         }
     }
 }

@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.ClipboardManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -120,7 +121,6 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private String title;
     private int duration = 0;
     private int finalPosition = 0;
-    private boolean userControling = false;
     private int id;
     private ShelterView shelterDv;
     private ClipboardManager clip;//复制文本用
@@ -144,6 +144,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private TextView sppeedTv75;
     private TextView sppeedTv50;
     private View speedCl;
+    private boolean isUserControlling = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -225,10 +226,11 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         if (null == mPlayer) {
             return;
         }
+        if (isUserControlling) {
+            return;
+        }
         try {
-            int currentSecond = (int) ((mPlayer.getCurrentPosition() / 1000f));
-            timeTv.setText(StringUtil.second2Hour(currentSecond) + "/" + StringUtil.second2Hour(duration));
-            progressSb.setProgress(currentSecond);
+            progressSb.setProgress(mPlayer.getCurrentPosition());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -240,30 +242,28 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         videoSv = findViewById(R.id.video_sv);
         videoSv.setProgressChangeListener(new ProgressChangeListener() {
             @Override
-            public void onProgressChanged(int value) {
-                if (userControling) {
-                    int pos = lastPauseLocation + value * 25;
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        mPlayer.seekTo(pos, MediaPlayer.SEEK_CLOSEST);
-                    } else {
-                        mPlayer.seekTo(pos);
-                    }
+            public void onProgressChanged(float value) {
+                int pos = lastPauseLocation + (int) (duration * value);
+                Logger.d("sv:" + value + " last:" + lastPauseLocation + " duration:" + duration + " ,pos:" + pos);
+                if (pos > duration || pos < 0) {
+                    return;
                 }
+                progressSb.setProgress(pos);
             }
 
             @Override
             public void onStartTrackingTouch() {
+                isUserControlling = true;
                 playPause();
-                userControling = true;
                 showControl();
                 centerControlGroup.setVisibility(View.GONE);
             }
 
             @Override
             public void onStopTrackingTouch() {
+                isUserControlling = false;
                 playStart();
                 hideControl();
-                userControling = false;
             }
         });
         chooseUriBtn = findViewById(R.id.choose_uri_btn);
@@ -292,22 +292,23 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
                 finalPosition = value;
-                if (userControling) {
-                    mPlayer.seekTo(finalPosition * 1000);
+                timeTv.setText(StringUtil.millsecond2Hour(mPlayer.getCurrentPosition()) + "/" + StringUtil.millsecond2Hour(duration));
+                if (isUserControlling) {
+                    mPlayer.seekTo(finalPosition);
                 }
             }
 
             @Override
             public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
+                isUserControlling = true;
                 playPause();
-                userControling = true;
             }
 
             @Override
             public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
+                isUserControlling = false;
                 if (finalPosition >= 0) {
-//                    mPlayer.seekTo(finalPosition * 1000);
-                    userControling = false;
+                    mPlayer.seekTo(finalPosition);
                     playStart();
                     hideControl();
                 }
@@ -519,7 +520,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     @Override
     public void onPrepared(MediaPlayer mp) {
         isPrepared = true;
-        duration = (int) (mPlayer.getDuration() / 1000f);
+        duration = mPlayer.getDuration();
         progressSb.setMax(duration);
         titleTv.setText(title);
         recoverState();
@@ -707,9 +708,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     }
 
     private void hideControl() {
-        if (userControling) {
-            return;
-        }
+
         mHandler.removeMessages(UPDATE_TIME);
         controlGroup.setVisibility(View.GONE);
         setSpeedClVisible(false);

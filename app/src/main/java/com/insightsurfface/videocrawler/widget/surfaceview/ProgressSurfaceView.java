@@ -20,6 +20,7 @@ public class ProgressSurfaceView extends SurfaceView {
     private boolean trackingTouched = false;
     private int mTouchSlop = 0, mTrackingTouchSlop;
     private ProgressChangeListener mProgressChangeListener;
+    private int width, height;
 
     public ProgressSurfaceView(Context context) {
         super(context);
@@ -40,6 +41,13 @@ public class ProgressSurfaceView extends SurfaceView {
         mContext = context;
         mTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
         mTrackingTouchSlop = mTouchSlop * 2;
+        post(new Runnable() {
+            @Override
+            public void run() {
+                width = getMeasuredWidth();
+                height = getMeasuredHeight();
+            }
+        });
     }
 
     @Override
@@ -68,7 +76,7 @@ public class ProgressSurfaceView extends SurfaceView {
                             trackingTouched = true;
                         }
                         if (null != mProgressChangeListener) {
-                            mProgressChangeListener.onProgressChanged(distanceX);
+                            mProgressChangeListener.onProgressChanged(Float.valueOf(distanceX) / Float.valueOf(width));
                         }
                     } else {
                         // click
@@ -79,7 +87,7 @@ public class ProgressSurfaceView extends SurfaceView {
                 if (touchDown) {
                     if (startDrag) {
                         // drag
-                        if (null!=mProgressChangeListener){
+                        if (null != mProgressChangeListener) {
                             mProgressChangeListener.onStopTrackingTouch();
                         }
                     } else {
