@@ -145,6 +145,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private TextView sppeedTv75;
     private TextView sppeedTv50;
     private View speedCl;
+    private TextView stateTv;
     private boolean isUserControlling = false;
     private Handler doubleClickHandler = new Handler(Looper.getMainLooper());
     private int tryDoubleClick = 0;
@@ -243,6 +244,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     protected void initUI() {
         super.initUI();
         videoSv = findViewById(R.id.video_sv);
+        stateTv = findViewById(R.id.state_tv);
         videoSv.setProgressChangeListener(new ProgressChangeListener() {
             @Override
             public void onProgressChanged(float value) {
@@ -271,11 +273,13 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
 
             @Override
             public void onLongTouch() {
+                stateTv.setText("3X");
                 changeplayerSpeed(3f);
             }
 
             @Override
             public void onLongTouchUp() {
+                stateTv.setText("");
                 changeplayerSpeed(1f);
             }
         });
