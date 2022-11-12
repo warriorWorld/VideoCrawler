@@ -268,6 +268,16 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                 playStart();
                 hideControl();
             }
+
+            @Override
+            public void onLongTouch() {
+                changeplayerSpeed(3f);
+            }
+
+            @Override
+            public void onLongTouchUp() {
+                changeplayerSpeed(1f);
+            }
         });
         chooseUriBtn = findViewById(R.id.choose_uri_btn);
         controlGroup = findViewById(R.id.control_group);
