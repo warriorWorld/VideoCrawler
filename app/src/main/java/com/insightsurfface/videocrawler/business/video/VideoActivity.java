@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.text.ClipboardManager;
 import android.text.TextUtils;
@@ -145,6 +146,8 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
     private TextView sppeedTv50;
     private View speedCl;
     private boolean isUserControlling = false;
+    private Handler doubleClickHandler = new Handler(Looper.getMainLooper());
+    private int tryDoubleClick = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -704,7 +707,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
         centerControlGroup.setVisibility(View.VISIBLE);
         mHandler.removeMessages(HIDE_CONTROL);
         mHandler.sendEmptyMessage(UPDATE_TIME);
-        mHandler.sendEmptyMessageDelayed(HIDE_CONTROL, 6000);
+        mHandler.sendEmptyMessageDelayed(HIDE_CONTROL, 3000);
     }
 
     private void hideControl() {
@@ -882,11 +885,20 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                 } else {
                     showControl();
                 }
-                if (mPlayer.isPlaying()) {
-                    playPause();
-                } else {
-                    playStart();
-                    hideControl();
+                tryDoubleClick++;
+                doubleClickHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        tryDoubleClick = 0;
+                    }
+                }, 300);
+                if (tryDoubleClick >= 2) {
+                    if (mPlayer.isPlaying()) {
+                        playPause();
+                    } else {
+                        playStart();
+                        hideControl();
+                    }
                 }
                 break;
             case R.id.translate_iv:
