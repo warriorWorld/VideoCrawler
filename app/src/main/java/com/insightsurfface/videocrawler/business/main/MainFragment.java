@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 public class MainFragment extends BaseRefreshListFragment {
     private ArrayList<VideoBean> videoList;
@@ -86,6 +87,7 @@ public class MainFragment extends BaseRefreshListFragment {
         });
         LayoutAnimationController controller = new LayoutAnimationController(AnimationUtils.loadAnimation(getActivity(), R.anim.recycler_load));
         refreshRcv.setLayoutAnimation(controller);
+        refreshRcv.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
     }
 
     private void toFileChooserActivity() {

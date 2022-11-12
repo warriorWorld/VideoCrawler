@@ -4,6 +4,7 @@
     android:id="@+id/video_ll"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="5dp"
     android:orientation="vertical">
 
     <com.insightsurfface.videocrawler.widget.imageview.WrapHeightImageView
@@ -35,5 +36,5 @@
         android:includeFontPadding="false"
         android:text="视频标题"
         android:textColor="@color/main_text_color"
-        android:textSize="17sp"/>
+        android:textSize="17sp" />
 </RelativeLayout>
