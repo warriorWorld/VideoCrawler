@@ -618,7 +618,7 @@ public class VideoActivity extends BaseActivity implements SurfaceHolder.Callbac
                 break;
             default:
                 //这个方法是相对于竖屏的 所以width实际是height
-                finalWidth = (int) ((Double.valueOf(videoHeight) / Double.valueOf(videoWidth)) * screenHeight);
+                finalWidth = (int) ((Double.valueOf(screenWidth) / Double.valueOf(videoHeight)) * videoWidth);
                 //这个方法是自适应的 所以width就是width
                 finalHeight = screenWidth;
                 break;
