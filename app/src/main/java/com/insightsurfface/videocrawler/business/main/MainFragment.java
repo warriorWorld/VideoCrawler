@@ -9,6 +9,7 @@ import android.os.Message;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.widget.TextView;
 
 import com.insightsurface.lib.base.BaseRefreshListFragment;
 import com.insightsurface.lib.listener.OnDialogClickListener;
@@ -38,6 +39,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Random;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
@@ -47,6 +49,7 @@ public class MainFragment extends BaseRefreshListFragment {
     private VideoAdapter mAdapter;
     private TopBar mTopBar;
     private DbAdapter db;//数据库
+    private TextView sizeTv;
     private final int UPDATE_LIST = 0;
     private Handler mHandler = new Handler() {
         @Override
@@ -59,6 +62,7 @@ public class MainFragment extends BaseRefreshListFragment {
         }
     };
     private final String[] DELETE_LIST = {"从列表中删除", "彻底删除"};
+   private Random mRandom=new Random(System.currentTimeMillis());
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -70,6 +74,7 @@ public class MainFragment extends BaseRefreshListFragment {
     protected void initUI(View v) {
         super.initUI(v);
         mTopBar = v.findViewById(R.id.gradient_bar);
+        sizeTv = v.findViewById(R.id.size_tv);
         mTopBar.setOnTopBarClickListener(new TopBar.OnTopBarClickListener() {
             @Override
             public void onLeftClick() {
@@ -83,8 +88,10 @@ public class MainFragment extends BaseRefreshListFragment {
 
             @Override
             public void onTitleClick() {
-                Intent intent = new Intent(getActivity(), TestActivity.class);
-                startActivity(intent);
+                if (videoList != null && videoList.size() > 0) {
+                    int position=mRandom.nextInt(videoList.size());
+                    VideoActivity.startActivity(getActivity(), videoList.get(position).getId(), videoList.get(position).getPath(), videoList.get(position).getTitle());
+                }
             }
         });
         LayoutAnimationController controller = new LayoutAnimationController(AnimationUtils.loadAnimation(getActivity(), R.anim.recycler_load));
@@ -271,6 +278,7 @@ public class MainFragment extends BaseRefreshListFragment {
                 mAdapter.setList(videoList);
                 mAdapter.notifyDataSetChanged();
             }
+            sizeTv.setText(videoList.size() + "");
         } catch (Exception e) {
             noMoreData();
         }

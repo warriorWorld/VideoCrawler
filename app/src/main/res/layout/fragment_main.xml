@@ -21,4 +21,13 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/gradient_bar"
         android:layout_marginTop="5dp"></include>
+
+    <TextView
+        android:id="@+id/size_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="30dp" />
 </RelativeLayout>
