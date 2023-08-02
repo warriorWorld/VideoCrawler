@@ -24,6 +24,7 @@ import android.provider.MediaStore;
 
 import com.insightsurface.lib.utils.Logger;
 import com.insightsurfface.videocrawler.bean.VideoBean;
+import com.insightsurfface.videocrawler.config.Configure;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -701,8 +702,13 @@ public class FileUtils {
      * @return
      */
     public static ArrayList<VideoBean> getVideos(Context context) {
-
+        context = context.getApplicationContext();
         ArrayList<VideoBean> videos = new ArrayList<VideoBean>();
+        videos=addVideosThatInCertainFolder(context);
+        if (videos.size()>0){
+            Logger.d("add videos from videos");
+            return videos;
+        }
 
         Cursor c = null;
         try {
@@ -721,12 +727,12 @@ public class FileUtils {
                 long size = c.getLong(c.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE));// 大小
                 long duration = c.getLong(c.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION));// 时长
                 long date = c.getLong(c.getColumnIndexOrThrow(MediaStore.Video.Media.DATE_MODIFIED));//修改时间
-                Bitmap thumbnial=VideoUtil.getVideoThumbnail(context,Uri.parse(path));
+                Bitmap thumbnial = VideoUtil.getVideoThumbnail(context, Uri.parse(path));
                 VideoBean video = new VideoBean();
                 video.setPath(path);
                 video.setTitle(name);
                 video.setThumbnail(thumbnial);
-                video.setDuration((int)(duration/1000f));
+                video.setDuration((int) (duration / 1000f));
                 videos.add(video);
             }
         } catch (Exception e) {
@@ -737,6 +743,38 @@ public class FileUtils {
             }
         }
         return videos;
+    }
+
+    public static ArrayList<VideoBean> addVideosThatInCertainFolder(Context context) {
+        context = context.getApplicationContext();
+        String path = Environment
+                .getExternalStorageDirectory().getAbsolutePath() + File.separator + Configure.VIDEO_FOLDER;
+        ArrayList<VideoBean> videoList = new ArrayList<VideoBean>();
+        try {
+            File f = new File(path);//第一级目录 video
+            if (!f.exists()) {
+                return videoList;
+            }
+            File[] files = f.listFiles();//第二级目录 具体视频
+            if (null != files && files.length > 0) {
+                Logger.d("add videos:"+files.length);
+                for (int i = 0; i < files.length; i++) {
+                    String absolutePath=files[i].getAbsolutePath();
+                    Bitmap thumbnial = VideoUtil.getVideoThumbnail(context, Uri.parse(absolutePath));
+                    int duration = VideoUtil.getVideoDuration(context, Uri.parse(absolutePath));
+                    VideoBean item = new VideoBean();
+                    item.setThumbnail(thumbnial);
+                    item.setDuration(duration);
+                    item.setPath(absolutePath);
+                    item.setTitle(files[i].getName());
+                    videoList.add(item);
+                }
+            }
+            return videoList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return videoList;
+        }
     }
 
     /**

@@ -8,9 +8,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.ViewConfiguration;
-import android.view.ViewGroup;
 
-import com.insightsurface.lib.utils.Logger;
 import com.insightsurfface.videocrawler.listener.ProgressChangeListener;
 
 public class ProgressSurfaceView extends SurfaceView {

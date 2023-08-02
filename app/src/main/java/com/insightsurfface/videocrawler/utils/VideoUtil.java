@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 
+import com.insightsurface.lib.utils.Logger;
 import com.insightsurface.lib.utils.NumberUtil;
 
 import java.util.HashMap;
@@ -14,6 +15,7 @@ public class VideoUtil {
         Bitmap bitmap = null;
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         try {
+            Logger.d("video image uri:"+uri.toString());
             retriever.setDataSource(context, uri);
             String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
             bitmap = retriever.getFrameAtTime(Integer.valueOf(time) * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);

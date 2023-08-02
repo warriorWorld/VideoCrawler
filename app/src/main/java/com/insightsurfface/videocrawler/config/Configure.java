@@ -17,4 +17,5 @@ public class Configure extends com.insightsurface.lib.config.Configure {
             "94905&type=data&doctype=json&version=1.1&q=";
     public static final String QQ_GROUP = "782685214";
     public static final String DOWNLOAD_URL = "https://github.com/warriorWorld/VideoCrawler/raw/master/app/release/app-release.apk";
+    final public static String VIDEO_FOLDER="video";
 }
