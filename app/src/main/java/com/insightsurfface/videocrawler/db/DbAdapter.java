@@ -39,7 +39,13 @@ public class DbAdapter {
         db.execSQL(
                 "insert into VideoTable (path,title,duration,watched_time) values (?,?,?,?)",
                 new Object[]{path, videoName, duration, watchedTime});
-        ShareObjUtil.saveObject(context, BitmapUtils.bitmapToString(VideoUtil.getVideoThumbnail(context, Uri.parse(path))), queryIdByPath(path) + ShareKeys.VIDEO_THUMBNAIL);
+        String bitmpString = "";
+        try {
+            bitmpString = BitmapUtils.bitmapToString(VideoUtil.getVideoThumbnail(context, Uri.parse(path)));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        ShareObjUtil.saveObject(context, bitmpString, queryIdByPath(path) + ShareKeys.VIDEO_THUMBNAIL);
     }
 
     /**
